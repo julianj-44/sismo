@@ -1,0 +1,450 @@
+══════════════════════════════════════════════════════════════════════
+  DICCIONARIO DE DATOS COMPLETO — OBSERVATORIO SÍSMICO
+══════════════════════════════════════════════════════════════════════
+
+  Base de datos: observatorio_sismico (PostgreSQL local)
+  Esquema: observatorio
+  Fuente: USGS, feed GeoJSON Summary "all_month" (últimos 30 días)
+  URL: https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson
+  Filtro de inclusión: solo properties.type = "earthquake"
+  Zona horaria: todas las fechas se almacenan y muestran en UTC
+  Elaborado a partir de: 03_Estructura.sql, 04_Carga_USGS.R y el
+  esquema de salida GeoJSON de la página del USGS
+
+  CONTENIDO
+  Parte A (secciones 1 a 3): lo que YA guarda tu base de datos
+  Parte B (sección 4): variables del USGS que NO se guardan hoy
+  Parte C (secciones 5 y 6): cómo incorporarlas y limitaciones
+
+══════════════════════════════════════════════════════════════════════
+  PARTE A — 1. TABLA observatorio.eventos — UNA FILA POR SISMO
+══════════════════════════════════════════════════════════════════════
+
+  Clave primaria: id. Si un evento ya existe y el USGS lo revisó
+  (actualizado_fuente más reciente), la fila se actualiza; si no, se
+  deja igual. Por eso cargar dos veces el mismo lote no duplica.
+
+  ─────────────────────────────────────────────────────────────────
+  id
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: features[].id
+  Tipo PostgreSQL: text · Obligatorio · Clave primaria (única)
+  Significado: identificador del evento asignado por el USGS
+  Variable: cualitativa nominal (identificador, no se analiza)
+  Uso: contar eventos y detectar duplicados
+  Faltantes: no admite; el script se detiene si falta un id
+
+  ─────────────────────────────────────────────────────────────────
+  fecha_evento
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: properties.time
+  Tipo PostgreSQL: timestamptz · Obligatorio
+  Significado: instante en que ocurrió el sismo (origen del evento)
+  Conversión: el USGS entrega milisegundos desde 1970-01-01 UTC; el
+    script divide entre 1000 y lo guarda como fecha-hora UTC
+  Variable: temporal
+  Uso: evolución temporal, filtros por período, evento más reciente
+  Faltantes: no admite
+  Nota: es distinta de actualizado_fuente y de fecha_carga
+
+  ─────────────────────────────────────────────────────────────────
+  actualizado_fuente
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: properties.updated
+  Tipo PostgreSQL: timestamptz · Obligatorio
+  Significado: última vez que el USGS actualizó o revisó el evento
+  Conversión: igual que fecha_evento (milisegundos → fecha UTC)
+  Variable: temporal
+  Uso: decidir si un evento recibido es más reciente que el guardado
+    (la fila solo se actualiza si este valor es mayor)
+  Faltantes: no admite
+  Nota: no es la fecha del sismo ni la fecha de carga
+
+  ─────────────────────────────────────────────────────────────────
+  lugar
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: properties.place
+  Tipo PostgreSQL: text · Opcional
+  Significado: descripción textual de la ubicación del evento
+    (distancia y dirección a una referencia geográfica, más región)
+  Variable: cualitativa nominal (texto libre)
+  Uso: etiquetas y tablas de detalle; no es una categoría limpia
+    para agrupar sin procesar el texto
+  Faltantes: se guarda como NULL
+
+  ─────────────────────────────────────────────────────────────────
+  magnitud
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: properties.mag
+  Tipo PostgreSQL: double precision · Opcional
+  Unidad: adimensional (escala logarítmica de magnitud)
+  Significado: tamaño del sismo según el método indicado en
+    tipo_magnitud
+  Variable: cuantitativa continua
+  Uso: magnitud máxima, distribución, comparación de subconjuntos
+  Faltantes: se guarda como NULL; NUNCA reemplazar por 0
+  Valores negativos: pueden ser válidos (sismos muy pequeños); se
+    conservan
+  Advertencia: magnitud no es intensidad ni energía
+
+  ─────────────────────────────────────────────────────────────────
+  tipo_magnitud
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: properties.magType
+  Tipo PostgreSQL: text · Opcional
+  Significado: método con el que se calculó la magnitud
+  Ejemplos habituales: ml, mb, md, mww (confirmar los valores que
+    aparezcan realmente en los datos)
+  Variable: cualitativa nominal
+  Uso: distinguir tipos al comparar magnitudes; no mezclarlos sin
+    explicarlo
+  Faltantes: se guarda como NULL
+
+  ─────────────────────────────────────────────────────────────────
+  longitud
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: geometry.coordinates[0]
+  Tipo PostgreSQL: double precision · Opcional
+  Unidad: grados decimales
+  Restricción: CHECK entre -180 y 180
+  Variable: cuantitativa continua (coordenada)
+  Uso: mapa. En Power BI categorizar como longitud y no sumarla
+  Faltantes: el script se detiene si faltan coordenadas
+
+  ─────────────────────────────────────────────────────────────────
+  latitud
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: geometry.coordinates[1]
+  Tipo PostgreSQL: double precision · Opcional
+  Unidad: grados decimales
+  Restricción: CHECK entre -90 y 90
+  Variable: cuantitativa continua (coordenada)
+  Uso: mapa. En Power BI categorizar como latitud y no sumarla
+  Faltantes: el script se detiene si faltan coordenadas
+
+  ─────────────────────────────────────────────────────────────────
+  profundidad_km
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: geometry.coordinates[2]
+  Tipo PostgreSQL: double precision · Opcional
+  Unidad: kilómetros
+  Variable: cuantitativa continua
+  Uso: distribución de profundidad, clasificación en superficiales
+    y profundos (criterios definidos por el grupo y documentados)
+  Faltantes: se guarda como NULL; no reemplazar por 0
+  Pendiente: revisar en los datos reales el rango y si hay valores
+    cercanos a 0 o negativos
+
+  ─────────────────────────────────────────────────────────────────
+  url
+  ─────────────────────────────────────────────────────────────────
+  Origen en el JSON: properties.url
+  Tipo PostgreSQL: text · Opcional
+  Significado: enlace a la página del evento en el sitio del USGS
+  Variable: cualitativa (texto)
+  Uso: referencia para verificar un evento; no se analiza
+  Faltantes: se guarda como NULL
+
+  ─────────────────────────────────────────────────────────────────
+  fecha_carga
+  ─────────────────────────────────────────────────────────────────
+  Origen: no viene del USGS; la asigna PostgreSQL (now())
+  Tipo PostgreSQL: timestamptz · Obligatorio
+  Significado: momento en que la fila se insertó o se actualizó por
+    última vez en la base
+  Variable: temporal
+  Uso: auditar la actualidad de la base y la latencia entre evento,
+    fuente y carga
+  Nota: si el USGS revisa un evento y se recarga, este valor cambia
+
+══════════════════════════════════════════════════════════════════════
+  PARTE A — 2. TABLA observatorio.cargas — UNA FILA POR EJECUCIÓN
+══════════════════════════════════════════════════════════════════════
+
+  Describe ejecuciones del script, no eventos. No debe relacionarse
+  con eventos mediante una clave o un filtro arbitrario.
+
+  id · bigint · generado automáticamente · clave primaria
+    Número de la ejecución
+  inicio · timestamptz · obligatorio
+    Momento en que comenzó la carga
+  fin · timestamptz · obligatorio · valor por defecto now()
+    Momento en que se registró la carga
+  origen · text · obligatorio
+    Dirección del feed (carga en vivo) o nombre del archivo JSON
+    (carga de un lote de demostración)
+  estado · text · obligatorio
+    "ok" si terminó bien; "error" si falló
+  procesados · integer · obligatorio
+    Eventos de tipo earthquake leídos en la ejecución, tras
+    eliminar identificadores repetidos
+  afectados · integer · obligatorio
+    Eventos insertados o actualizados. Valor 0 no es un error:
+    significa que no había nada nuevo ni revisado
+  mensaje · text · opcional
+    Descripción del error cuando estado = "error"
+
+══════════════════════════════════════════════════════════════════════
+  PARTE A — 3. VISTAS PARA POWER BI (SOLO LECTURA)
+══════════════════════════════════════════════════════════════════════
+
+  ─────────────────────────────────────────────────────────────────
+  observatorio.v_eventos
+  ─────────────────────────────────────────────────────────────────
+  Columnas iguales a la tabla eventos, más:
+  fecha_evento_utc · fecha_evento convertida a UTC (sin zona)
+  actualizado_fuente_utc · actualizado_fuente en UTC
+  fecha_carga_utc · fecha_carga en UTC
+  dia_utc · fecha (día) del evento en UTC, para agrupar por día
+  No incluye las columnas originales fecha_evento,
+  actualizado_fuente ni fecha_carga: en Power BI se usan las _utc
+
+  ─────────────────────────────────────────────────────────────────
+  observatorio.v_cargas
+  ─────────────────────────────────────────────────────────────────
+  Columnas de la tabla cargas con inicio_utc y fin_utc en UTC
+
+══════════════════════════════════════════════════════════════════════
+  PARTE B — 4. VARIABLES DEL USGS QUE HOY NO SE GUARDAN
+══════════════════════════════════════════════════════════════════════
+
+  Cada evento del feed trae más campos de los que guarda la tabla.
+  Aquí están todos, agrupados por tema, por si quieres analizar algo
+  adicional. Las definiciones son un resumen de la documentación del
+  USGS: confirmen cada una en el enlace del campo en la página oficial
+  antes de usarla en el informe.
+
+  Todos están en el JSON dentro de features[].properties. Cada ficha
+  indica un tipo PostgreSQL SUGERIDO si decidieran guardarlo.
+  Importante: los valores vacíos NO equivalen a 0; se guardan NULL.
+
+  ─────────────────────────────────────────────────────────────────
+  GRUPO 1. CALIDAD DE LA LOCALIZACIÓN
+  Sirven para la página "Calidad y actualidad" o para estudiar qué
+  tan robusta es la ubicación de cada evento.
+  ─────────────────────────────────────────────────────────────────
+
+  nst
+  Origen: properties.nst · Tipo sugerido: integer
+  Significado: número total de estaciones sísmicas usadas para
+    determinar la ubicación del sismo
+  Variable: cuantitativa discreta (conteo)
+  Uso posible: comparar la cantidad de estaciones entre regiones o
+    rangos de magnitud
+  Faltantes: frecuentes (no todos los eventos lo reportan)
+
+  gap
+  Origen: properties.gap · Tipo sugerido: double precision
+  Unidad: grados
+  Significado: mayor brecha azimutal entre estaciones adyacentes;
+    cuanto menor, más confiable la posición horizontal
+  Variable: cuantitativa continua
+  Uso posible: indicador de calidad de localización
+  Faltantes: frecuentes
+
+  dmin
+  Origen: properties.dmin · Tipo sugerido: double precision
+  Unidad: grados (aprox. 111 km por grado)
+  Significado: distancia horizontal del epicentro a la estación más
+    cercana
+  Variable: cuantitativa continua
+  Uso posible: relacionar la cobertura de estaciones con la
+    incertidumbre; convertir a km indicando la aproximación
+  Faltantes: frecuentes
+
+  rms
+  Origen: properties.rms · Tipo sugerido: double precision
+  Unidad: segundos
+  Significado: residual cuadrático medio de los tiempos de viaje de
+    las ondas; resume qué tan bien encaja la solución con las
+    observaciones
+  Variable: cuantitativa continua
+  Uso posible: indicador de ajuste de la localización
+  Faltantes: posibles
+
+  ─────────────────────────────────────────────────────────────────
+  GRUPO 2. REVISIÓN, ORIGEN Y TIPO DE EVENTO
+  Sirven para calidad, actualidad y para comparar por red.
+  ─────────────────────────────────────────────────────────────────
+
+  status
+  Origen: properties.status · Tipo sugerido: text
+  Significado: estado del evento, "automatic" (sin revisión) o
+    "reviewed" (revisado por un analista)
+  Variable: cualitativa nominal
+  Uso posible: proporción de eventos revisados vs. automáticos; ver
+    si los recientes están menos revisados (hipótesis a verificar)
+  Faltantes: pocos
+  Cuidado: el encabezado (metadata) también trae un campo status;
+    ese es un código numérico de la respuesta y es distinto
+
+  net
+  Origen: properties.net · Tipo sugerido: text
+  Significado: identificador de la red de datos considerada fuente
+    preferida de información del evento
+  Variable: cualitativa nominal
+  Uso posible: comparar cantidad y magnitud de eventos por red;
+    cada red tiene cobertura y sensibilidad propias
+  Faltantes: pocos
+
+  code
+  Origen: properties.code · Tipo sugerido: text
+  Significado: código del evento asignado por la red fuente
+  Variable: cualitativa nominal (identificador)
+  Uso posible: rastrear el evento; normalmente el id se forma con
+    net + code (verificar en los datos)
+  Faltantes: pocos
+
+  type
+  Origen: properties.type · Tipo sugerido: text
+  Significado: tipo de evento sísmico (earthquake, quarry blast...)
+  Estado actual: el script solo conserva "earthquake" y no guarda
+    esta columna. Para estudiar otros tipos hay que cambiar el
+    filtro de normalizar()
+  Variable: cualitativa nominal
+
+  ─────────────────────────────────────────────────────────────────
+  GRUPO 3. RELEVANCIA E IMPACTO
+  Solo existen para parte de los eventos (los de mayor interés o con
+  reportes). Interpretar los vacíos con cuidado.
+  ─────────────────────────────────────────────────────────────────
+
+  sig
+  Origen: properties.sig · Tipo sugerido: integer
+  Significado: índice de significancia del evento; números mayores
+    indican un evento más significativo. Combina magnitud, máxima
+    intensidad estimada, reportes de sentido y otros factores
+  Variable: cuantitativa discreta
+  Uso posible: ordenar eventos por relevancia; no es magnitud
+  Faltantes: pocos
+
+  felt
+  Origen: properties.felt · Tipo sugerido: integer
+  Significado: número total de reportes de personas que sintieron el
+    sismo (sistema "Did You Feel It?")
+  Variable: cuantitativa discreta (conteo)
+  Uso posible: relación entre magnitud, profundidad y percepción
+  Faltantes: muy frecuentes. Vacío no equivale a 0 reportes sin
+    verificarlo; documentar el tratamiento
+
+  cdi
+  Origen: properties.cdi · Tipo sugerido: double precision
+  Significado: intensidad máxima reportada por las personas
+    (sistema "Did You Feel It?")
+  Variable: cuantitativa (escala de intensidad)
+  Faltantes: muy frecuentes (solo con reportes)
+  Advertencia: es intensidad, no magnitud
+
+  mmi
+  Origen: properties.mmi · Tipo sugerido: double precision
+  Significado: intensidad instrumental máxima estimada (ShakeMap)
+  Variable: cuantitativa (escala de intensidad)
+  Faltantes: muy frecuentes (solo eventos con ShakeMap)
+  Advertencia: es intensidad, no magnitud ni energía
+
+  alert
+  Origen: properties.alert · Tipo sugerido: text
+  Significado: nivel de alerta PAGER (green, yellow, orange, red)
+    sobre el impacto estimado
+  Variable: cualitativa ordinal
+  Faltantes: muy frecuentes (solo eventos significativos)
+  Cuidado: es un dato descriptivo de la fuente; el informe NO es un
+    sistema de alerta
+
+  tsunami
+  Origen: properties.tsunami · Tipo sugerido: smallint
+  Significado: bandera 1/0; 1 señala un evento en región oceánica
+    de interés para el aviso de tsunami
+  Variable: cualitativa binaria
+  Cuidado: NO indica que haya ocurrido o vaya a ocurrir un tsunami
+
+  ─────────────────────────────────────────────────────────────────
+  GRUPO 4. IDENTIFICACIÓN, ENLACES Y OTROS
+  Poco útiles para el análisis; sirven para trazabilidad.
+  ─────────────────────────────────────────────────────────────────
+
+  ids
+  Origen: properties.ids · Tipo sugerido: text
+  Significado: lista separada por comas de los identificadores
+    asociados al mismo evento
+  Variable: cualitativa (texto compuesto)
+
+  sources
+  Origen: properties.sources · Tipo sugerido: text
+  Significado: lista separada por comas de las redes que
+    contribuyeron datos
+  Variable: cualitativa (texto compuesto)
+
+  types
+  Origen: properties.types · Tipo sugerido: text
+  Significado: lista separada por comas de los tipos de producto
+    asociados al evento (por ejemplo, ShakeMap)
+  Variable: cualitativa (texto compuesto)
+
+  detail
+  Origen: properties.detail · Tipo sugerido: text
+  Significado: enlace al GeoJSON con el detalle del evento
+  Variable: cualitativa (texto)
+
+  tz
+  Origen: properties.tz · Tipo sugerido: integer
+  Unidad: minutos
+  Significado: desfase horario respecto a UTC en el epicentro
+  Variable: cuantitativa discreta
+  Cuidado: puede venir vacío; el informe se maneja en UTC y no lo
+    necesita
+
+  ─────────────────────────────────────────────────────────────────
+  METADATOS DEL ENCABEZADO DE LA RESPUESTA (NO DEL EVENTO)
+  ─────────────────────────────────────────────────────────────────
+
+  metadata.generated · momento en que el USGS generó la respuesta
+    (milisegundos desde 1970). Útil para documentar la descarga
+  metadata.count · número de eventos en la respuesta, antes del
+    filtro type = earthquake. Sirve para validar contra el conteo
+    procesado
+  metadata.url, title, api · dirección de la solicitud, título y
+    versión de la API
+  metadata.status · código HTTP de la respuesta (no confundir con
+    properties.status)
+  bbox · caja envolvente: longitud, latitud y profundidad mínimas y
+    máximas de todos los eventos de la respuesta
+
+══════════════════════════════════════════════════════════════════════
+  PARTE C — 5. CÓMO INCORPORAR UNA VARIABLE NUEVA
+══════════════════════════════════════════════════════════════════════
+
+  Hay que modificar cuatro cosas, en este orden:
+  1 Tabla: añadir la columna en 03_Estructura.sql (tipo sugerido)
+  2 Script R: leerla en normalizar() con escalar(p$campo) para texto
+    o escalar(p$campo, TRUE) para números, y añadirla al data.frame
+  3 Script R: incluirla en el INSERT, en el SELECT y en el DO UPDATE
+    de cargar()
+  4 Vista: añadirla a v_eventos (la vista ya tiene GRANT SELECT; si
+    crean vistas nuevas, otorguen SELECT a pbi_lector)
+
+  DECIDAN ANTES DE LA PRIMERA CARGA. Una fila existente solo se
+  actualiza si el USGS la revisó (actualizado_fuente mayor); por eso,
+  si añaden columnas después, los eventos ya cargados quedarán con
+  la columna vacía. Si ya cargaron, creen una base nueva y recarguen.
+
+  Los lotes JSON de la demostración conservan todos los campos del
+  USGS, así que no hace falta volver a descargar para usarlos.
+
+  Sugerencia de subconjunto (decídanlo en grupo): status, nst, gap,
+  dmin y rms para calidad; sig y felt para relevancia. El resto tiene
+  muchos vacíos o es de trazabilidad.
+
+══════════════════════════════════════════════════════════════════════
+  PARTE C — 6. LIMITACIONES QUE AFECTAN LA INTERPRETACIÓN
+══════════════════════════════════════════════════════════════════════
+
+  La base acumula los eventos consultados; no borra los que salen de
+  la ventana móvil de 30 días. Por eso el informe debe fijar filtros
+  temporales explícitos.
+  El script no reconcilia eliminaciones ni fusiones de eventos del
+  catálogo, ni revisiones de eventos que ya salieron de la ventana.
+  La magnitud depende de tipo_magnitud: comparar con cautela.
+  Los campos de impacto (felt, cdi, mmi, alert) existen solo para
+  parte de los eventos: no representan a todos los sismos.
+  El análisis es descriptivo; no es predicción ni alerta temprana.

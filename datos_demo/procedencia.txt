@@ -1,0 +1,5 @@
+Fuente: https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson
+Descarga UTC: 2026-10-18 00:31:43
+Inicial: 9882
+Reservado: 20
+Reproducción de datos reales; fechas originales conservadas.

@@ -1,0 +1,805 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.18,
+        "place": "16 km NW of Pinnacles, CA",
+        "time": 1792283027060,
+        "updated": 1792283125547,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75451326",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75451326.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 21,
+        "net": "nc",
+        "code": "75451326",
+        "ids": ",nc75451326,",
+        "sources": ",nc,",
+        "types": ",nearby-cities,origin,phase-data,",
+        "nst": 10,
+        "dmin": 0.05437,
+        "rms": 0.06,
+        "gap": 155,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 1.2 - 16 km NW of Pinnacles, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -121.258499145508,
+          36.6411666870117,
+          6.19000005722046
+        ]
+      },
+      "id": "nc75451326"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 2.5,
+        "place": "55 km E of Pedro Bay, Alaska",
+        "time": 1792282820074,
+        "updated": 1792283100783,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026upqxpc",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/aka2026upqxpc.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 96,
+        "net": "ak",
+        "code": "a2026upqxpc",
+        "ids": ",aka2026upqxpc,",
+        "sources": ",ak,",
+        "types": ",origin,phase-data,",
+        "nst": 106,
+        "dmin": 0.1,
+        "rms": 0.7,
+        "gap": 53,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 2.5 - 55 km E of Pedro Bay, Alaska"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -153.134,
+          59.881,
+          135.5
+        ]
+      },
+      "id": "aka2026upqxpc"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.47,
+        "place": "16 km WSW of Olancha, CA",
+        "time": 1792282137580,
+        "updated": 1792282793570,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci41348679",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci41348679.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 33,
+        "net": "ci",
+        "code": "41348679",
+        "ids": ",ci41348679,",
+        "sources": ",ci,",
+        "types": ",focal-mechanism,nearby-cities,origin,phase-data,scitech-link,",
+        "nst": 29,
+        "dmin": 0.1339,
+        "rms": 0.16,
+        "gap": 72,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 1.5 - 16 km WSW of Olancha, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.168833333333,
+          36.2176666666667,
+          5.99
+        ]
+      },
+      "id": "ci41348679"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.34,
+        "place": "26 km SW of Maricopa, CA",
+        "time": 1792282014580,
+        "updated": 1792282668640,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci41348671",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci41348671.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 28,
+        "net": "ci",
+        "code": "41348671",
+        "ids": ",ci41348671,",
+        "sources": ",ci,",
+        "types": ",focal-mechanism,nearby-cities,origin,phase-data,",
+        "nst": 34,
+        "dmin": 0.06851,
+        "rms": 0.23,
+        "gap": 33,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 1.3 - 26 km SW of Maricopa, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -119.608333333333,
+          34.9003333333333,
+          8.64
+        ]
+      },
+      "id": "ci41348671"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.45,
+        "place": "10 km SE of Olancha, CA",
+        "time": 1792279827100,
+        "updated": 1792280037589,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci41348663",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci41348663.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 32,
+        "net": "ci",
+        "code": "41348663",
+        "ids": ",ci41348663,",
+        "sources": ",ci,",
+        "types": ",nearby-cities,origin,phase-data,scitech-link,",
+        "nst": 31,
+        "dmin": 0.1118,
+        "rms": 0.15,
+        "gap": 45,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 1.5 - 10 km SE of Olancha, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.928333333333,
+          36.2191666666667,
+          4.35
+        ]
+      },
+      "id": "ci41348663"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 0.98,
+        "place": "6 km NNW of The Geysers, CA",
+        "time": 1792279589780,
+        "updated": 1792279684976,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75451281",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75451281.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 15,
+        "net": "nc",
+        "code": "75451281",
+        "ids": ",nc75451281,",
+        "sources": ",nc,",
+        "types": ",nearby-cities,origin,phase-data,",
+        "nst": 12,
+        "dmin": 0.01284,
+        "rms": 0.01,
+        "gap": 52,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 1.0 - 6 km NNW of The Geysers, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.791664123535,
+          38.8228340148926,
+          0.720000028610229
+        ]
+      },
+      "id": "nc75451281"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.81,
+        "place": "12 km NE of Pāhala, Hawaii",
+        "time": 1792277693500,
+        "updated": 1792277902990,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv75059911",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/hv75059911.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 50,
+        "net": "hv",
+        "code": "75059911",
+        "ids": ",hv75059911,",
+        "sources": ",hv,",
+        "types": ",origin,phase-data,",
+        "nst": 27,
+        "dmin": 0.02942,
+        "rms": 0.129999995,
+        "gap": 143,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 1.8 - 12 km NE of Pāhala, Hawaii"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -155.383331298828,
+          19.2638339996338,
+          31.1399993896484
+        ]
+      },
+      "id": "hv75059911"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 2.05,
+        "place": "5 km NNE of Honaunau-Napoopoo, Hawaii",
+        "time": 1792276689380,
+        "updated": 1792276926310,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv75059891",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/hv75059891.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 65,
+        "net": "hv",
+        "code": "75059891",
+        "ids": ",hv75059891,",
+        "sources": ",hv,",
+        "types": ",origin,phase-data,",
+        "nst": 36,
+        "dmin": 0.06486,
+        "rms": 0.209999993,
+        "gap": 111,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 2.1 - 5 km NNE of Honaunau-Napoopoo, Hawaii"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -155.851669311523,
+          19.5073337554932,
+          22.75
+        ]
+      },
+      "id": "hv75059891"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 0.74,
+        "place": "3 km NW of The Geysers, CA",
+        "time": 1792276681790,
+        "updated": 1792276779967,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75451266",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75451266.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 8,
+        "net": "nc",
+        "code": "75451266",
+        "ids": ",nc75451266,",
+        "sources": ",nc,",
+        "types": ",nearby-cities,origin,phase-data,",
+        "nst": 8,
+        "dmin": 0.009955,
+        "rms": 0.01,
+        "gap": 106,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 0.7 - 3 km NW of The Geysers, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.775833129883,
+          38.7963333129883,
+          2.74000000953674
+        ]
+      },
+      "id": "nc75451266"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.08,
+        "place": "4 km NW of The Geysers, CA",
+        "time": 1792275325650,
+        "updated": 1792275420364,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75451231",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75451231.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 18,
+        "net": "nc",
+        "code": "75451231",
+        "ids": ",nc75451231,",
+        "sources": ",nc,",
+        "types": ",nearby-cities,origin,phase-data,",
+        "nst": 14,
+        "dmin": 0.009684,
+        "rms": 0.04,
+        "gap": 62,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 1.1 - 4 km NW of The Geysers, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.782501220703,
+          38.8036651611328,
+          0.330000013113022
+        ]
+      },
+      "id": "nc75451231"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 3.1,
+        "place": "8 km NW of Stanton, Texas",
+        "time": 1792275102130,
+        "updated": 1792276584463,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/tx2026umexzb",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/tx2026umexzb.geojson",
+        "felt": 1,
+        "cdi": 2.7,
+        "mmi": {},
+        "alert": {},
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 148,
+        "net": "tx",
+        "code": "2026umexzb",
+        "ids": ",tx2026umexzb,us6000u326,",
+        "sources": ",tx,us,",
+        "types": ",dyfi,origin,phase-data,",
+        "nst": 49,
+        "dmin": 0,
+        "rms": 0.1,
+        "gap": 50,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 3.1 - 8 km NW of Stanton, Texas"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -101.863,
+          32.172,
+          6.543
+        ]
+      },
+      "id": "tx2026umexzb"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.91,
+        "place": "8 km N of Lake Pillsbury, CA",
+        "time": 1792273800030,
+        "updated": 1792273895197,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75451216",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75451216.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 56,
+        "net": "nc",
+        "code": "75451216",
+        "ids": ",nc75451216,",
+        "sources": ",nc,",
+        "types": ",nearby-cities,origin,phase-data,",
+        "nst": 8,
+        "dmin": 0.03698,
+        "rms": 0.04,
+        "gap": 113,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 1.9 - 8 km N of Lake Pillsbury, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.945663452148,
+          39.4775009155273,
+          10.0299997329712
+        ]
+      },
+      "id": "nc75451216"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 2.59,
+        "place": "18 km WSW of Petrolia, CA",
+        "time": 1792273382290,
+        "updated": 1792273795614,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75451211",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75451211.geojson",
+        "felt": 1,
+        "cdi": 3.1,
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 104,
+        "net": "nc",
+        "code": "75451211",
+        "ids": ",nc75451211,",
+        "sources": ",nc,",
+        "types": ",dyfi,nearby-cities,origin,phase-data,",
+        "nst": 19,
+        "dmin": 0.1126,
+        "rms": 0.21,
+        "gap": 285,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 2.6 - 18 km WSW of Petrolia, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -124.488334655762,
+          40.2726669311523,
+          7.34999990463257
+        ]
+      },
+      "id": "nc75451211"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 3.2,
+        "place": "108 km N of Yakutat, Alaska",
+        "time": 1792273362866,
+        "updated": 1792276793040,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u323",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us6000u323.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 158,
+        "net": "us",
+        "code": "6000u323",
+        "ids": ",us6000u323,",
+        "sources": ",us,",
+        "types": ",origin,phase-data,",
+        "nst": 41,
+        "dmin": 0.466,
+        "rms": 1.03,
+        "gap": 66,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 3.2 - 108 km N of Yakutat, Alaska"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -139.8538,
+          60.5158,
+          5
+        ]
+      },
+      "id": "us6000u323"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 0.26,
+        "place": "2 km NW of The Geysers, CA",
+        "time": 1792272864600,
+        "updated": 1792272960267,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75451196",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc75451196.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 1,
+        "net": "nc",
+        "code": "75451196",
+        "ids": ",nc75451196,",
+        "sources": ",nc,",
+        "types": ",nearby-cities,origin,phase-data,",
+        "nst": 10,
+        "dmin": 0.01187,
+        "rms": 0.01,
+        "gap": 91,
+        "magType": "md",
+        "type": "earthquake",
+        "title": "M 0.3 - 2 km NW of The Geysers, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.768333435059,
+          38.7908325195312,
+          1.97000002861023
+        ]
+      },
+      "id": "nc75451196"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 0.7,
+        "place": "85 km NNW of Karluk, Alaska",
+        "time": 1792272453901,
+        "updated": 1792272620965,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026uplgqp",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/aka2026uplgqp.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 8,
+        "net": "ak",
+        "code": "a2026uplgqp",
+        "ids": ",aka2026uplgqp,",
+        "sources": ",ak,",
+        "types": ",origin,phase-data,",
+        "nst": 6,
+        "dmin": 0,
+        "rms": 0.1,
+        "gap": 238,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 0.7 - 85 km NNW of Karluk, Alaska"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -154.982,
+          58.282,
+          5
+        ]
+      },
+      "id": "aka2026uplgqp"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 0.9,
+        "place": "111 km S of McCarthy, Alaska",
+        "time": 1792272165352,
+        "updated": 1792272243980,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026uplcme",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/aka2026uplcme.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 12,
+        "net": "ak",
+        "code": "a2026uplcme",
+        "ids": ",aka2026uplcme,",
+        "sources": ",ak,",
+        "types": ",origin,phase-data,",
+        "nst": 7,
+        "dmin": 0,
+        "rms": 0.9,
+        "gap": 135,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 0.9 - 111 km S of McCarthy, Alaska"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -142.895,
+          60.432,
+          23.2
+        ]
+      },
+      "id": "aka2026uplcme"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 0.5,
+        "place": "11 km S of Anza, CA",
+        "time": 1792272157320,
+        "updated": 1792272357421,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ci41348639",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ci41348639.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 4,
+        "net": "ci",
+        "code": "41348639",
+        "ids": ",ci41348639,",
+        "sources": ",ci,",
+        "types": ",nearby-cities,origin,phase-data,",
+        "nst": 23,
+        "dmin": 0.06354,
+        "rms": 0.18,
+        "gap": 69,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 0.5 - 11 km S of Anza, CA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.659333333333,
+          33.4526666666667,
+          2.7
+        ]
+      },
+      "id": "ci41348639"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.7,
+        "place": "60 km SSW of Central, Alaska",
+        "time": 1792272116748,
+        "updated": 1792272270410,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026uplbtx",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/aka2026uplbtx.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 44,
+        "net": "ak",
+        "code": "a2026uplbtx",
+        "ids": ",aka2026uplbtx,",
+        "sources": ",ak,",
+        "types": ",origin,phase-data,",
+        "nst": 16,
+        "dmin": 0.4,
+        "rms": 0.4,
+        "gap": 75,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 1.7 - 60 km SSW of Central, Alaska"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -145.463,
+          65.108,
+          1.1
+        ]
+      },
+      "id": "aka2026uplbtx"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 1.6,
+        "place": "18 km N of Skwentna, Alaska",
+        "time": 1792271980099,
+        "updated": 1792272170047,
+        "tz": {},
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026upkzuo",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/aka2026upkzuo.geojson",
+        "felt": {},
+        "cdi": {},
+        "mmi": {},
+        "alert": {},
+        "status": "automatic",
+        "tsunami": 0,
+        "sig": 39,
+        "net": "ak",
+        "code": "a2026upkzuo",
+        "ids": ",aka2026upkzuo,",
+        "sources": ",ak,",
+        "types": ",origin,phase-data,",
+        "nst": 5,
+        "dmin": 0.5,
+        "rms": 0.2,
+        "gap": 155,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 1.6 - 18 km N of Skwentna, Alaska"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -151.453,
+          62.155,
+          27.2
+        ]
+      },
+      "id": "aka2026upkzuo"
+    }
+  ]
+}

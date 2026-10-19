@@ -1,0 +1,12 @@
+PRÁCTICA PROFESIONAL · Universidad del Valle · 2026-2
+
+Comience por 01_Guia_Actividad.html (navegador; imprimible).
+La misma guía editable está en 01_Guia_Actividad.md.
+Siga 02_Instalacion_y_Ejecucion.md para la prueba técnica.
+03_Estructura.sql crea tablas y vistas sobre una base previamente creada.
+04_Carga_USGS.R define funciones: source() no inicia cargas automáticamente.
+05_Verificaciones.sql permite contrastar el informe.
+
+Cada grupo construye su PBIX. No se requiere licencia Pro ni publicar en web.
+Los lotes reales se descargan al ejecutar preparar_demo(), no están precargados.
+Fechas, tamaño de grupos y duración de exposición serán definidos en el campus.
