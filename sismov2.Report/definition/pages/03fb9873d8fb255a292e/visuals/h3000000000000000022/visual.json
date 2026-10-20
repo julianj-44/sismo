@@ -1,0 +1,93 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "h3000000000000000022",
+  "position": {
+    "x": 1360,
+    "y": 672,
+    "z": 18000,
+    "height": 344,
+    "width": 488,
+    "tabOrder": 18000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Limitaciones",
+                    "textStyle": {
+                      "fontSize": "14pt",
+                      "color": "#0B1B33",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "• Fuente USGS, ventana móvil de 30 días; solo type = earthquake.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "• La base acumula eventos: no elimina los que salen de la ventana.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "• No se reconcilian eliminaciones, fusiones ni revisiones de eventos fuera de la ventana móvil.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "• Los promedios de magnitud no son comparables entre grupos: el catálogo registra más sismos pequeños en unas regiones que en otras. Magnitud no es intensidad ni energía.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "• Análisis descriptivo: no es predicción ni alerta temprana.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

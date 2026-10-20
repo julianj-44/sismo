@@ -1,0 +1,162 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "h3000000000000000019",
+  "position": {
+    "x": 432,
+    "y": 626,
+    "z": 22000,
+    "height": 190,
+    "width": 872,
+    "tabOrder": 22000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_cargas"
+                    }
+                  },
+                  "Property": "inicio_utc"
+                }
+              },
+              "queryRef": "observatorio v_cargas.inicio_utc",
+              "nativeQueryRef": "inicio_utc",
+              "format": "dd MMM yyyy, HH:mm:ss"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_cargas"
+                    }
+                  },
+                  "Property": "fin_utc"
+                }
+              },
+              "queryRef": "observatorio v_cargas.fin_utc",
+              "nativeQueryRef": "fin_utc",
+              "format": "dd MMM yyyy, HH:mm:ss"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_cargas"
+                    }
+                  },
+                  "Property": "estado"
+                }
+              },
+              "queryRef": "observatorio v_cargas.estado",
+              "nativeQueryRef": "estado"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_cargas"
+                    }
+                  },
+                  "Property": "procesados"
+                }
+              },
+              "queryRef": "observatorio v_cargas.procesados",
+              "nativeQueryRef": "procesados"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_cargas"
+                    }
+                  },
+                  "Property": "afectados"
+                }
+              },
+              "queryRef": "observatorio v_cargas.afectados",
+              "nativeQueryRef": "afectados"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_cargas"
+                    }
+                  },
+                  "Property": "mensaje"
+                }
+              },
+              "queryRef": "observatorio v_cargas.mensaje",
+              "nativeQueryRef": "mensaje"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "observatorio v_cargas"
+                  }
+                },
+                "Property": "inicio_utc"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

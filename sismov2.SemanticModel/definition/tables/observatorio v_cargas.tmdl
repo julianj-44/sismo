@@ -2,8 +2,30 @@ table 'observatorio v_cargas'
 	lineageTag: 8813885a-ed1c-462f-b783-23a779b05fc4
 
 	measure 'Última carga exitosa UTC' = CALCULATE(MAX('observatorio v_cargas'[fin_utc]), 'observatorio v_cargas'[estado] = "ok")
-		formatString: General Date
+		formatString: dd mmm yyyy, HH:mm
 		lineageTag: 9796c1f3-4768-4aa4-9fcf-cef0c1daaf98
+
+	measure 'Cargas exitosas' = CALCULATE(COUNTROWS('observatorio v_cargas'), 'observatorio v_cargas'[estado] = "ok")
+		formatString: 0
+		lineageTag: 2b6f0a51-6d0c-4a43-9a52-3c1e7a0d1001
+
+	measure 'Cargas fallidas' = COALESCE(CALCULATE(COUNTROWS('observatorio v_cargas'), 'observatorio v_cargas'[estado] <> "ok"), 0)
+		formatString: 0
+		lineageTag: 2b6f0a51-6d0c-4a43-9a52-3c1e7a0d1002
+
+	measure 'Última carga con datos nuevos UTC' = CALCULATE(MAX('observatorio v_cargas'[fin_utc]), 'observatorio v_cargas'[estado] = "ok", 'observatorio v_cargas'[afectados] > 0)
+		formatString: dd mmm yyyy, HH:mm
+		lineageTag: 2b6f0a51-6d0c-4a43-9a52-3c1e7a0d1003
+
+	measure 'Texto última carga' = FORMAT([Cargas exitosas], "#,0", "es-CO") & IF([Cargas exitosas] = 1, " carga ok", " cargas ok") & " · " & FORMAT([Eventos], "#,0", "es-CO") & " eventos en la base"
+		lineageTag: 2b6f0a51-6d0c-4a43-9a52-3c1e7a0d1004
+
+	measure 'Antigüedad última carga' = VAR m = DATEDIFF(CALCULATE(MAX('observatorio v_cargas'[fin_utc]), 'observatorio v_cargas'[estado] = "ok"), UTCNOW(), MINUTE) VAR d = INT(m / 1440) VAR h = INT(MOD(m, 1440) / 60) VAR mi = MOD(m, 60) RETURN IF(ISBLANK(m), "Sin cargas", "hace " & IF(d > 0, d & " d ", "") & IF(d > 0 || h > 0, h & " h ", "") & mi & " min")
+		lineageTag: 2b6f0a51-6d0c-4a43-9a52-3c1e7a0d1005
+
+	measure 'Cargas con datos nuevos' = COALESCE(CALCULATE(COUNTROWS('observatorio v_cargas'), 'observatorio v_cargas'[estado] = "ok", 'observatorio v_cargas'[afectados] > 0), 0)
+		formatString: 0
+		lineageTag: 2b6f0a51-6d0c-4a43-9a52-3c1e7a0d1006
 
 	column id
 		dataType: int64

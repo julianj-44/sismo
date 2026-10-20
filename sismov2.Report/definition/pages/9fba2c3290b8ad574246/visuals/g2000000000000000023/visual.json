@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "g2000000000000000023",
+  "position": {
+    "x": 1320,
+    "y": 452,
+    "z": 2000,
+    "height": 216,
+    "width": 528,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Tres hallazgos",
+                    "textStyle": {
+                      "fontSize": "14pt",
+                      "color": "#0B1B33",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "1  ",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#A63D00",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "El mundo promedia unos 330 sismos por día (días completos): 370 entre el 19 y el 30 de septiembre y 305 entre el 1 y el 19 de octubre. Los días recientes se completan con retraso.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "2  ",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#A63D00",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "El 90 % ocurre a menos de 70 km de profundidad (9.443 de 10.514); hay 219 con profundidad negativa, válida.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "3  ",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#A63D00",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "Colombia aporta 36 de los 292 eventos de Latinoamérica (12 %), a unos 47 km de profundidad en promedio. La magnitud promedio no es comparable entre grupos.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

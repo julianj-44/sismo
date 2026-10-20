@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "h3000000000000000032",
+  "position": {
+    "x": 868,
+    "y": 518,
+    "z": 13000,
+    "height": 56,
+    "width": 206,
+    "tabOrder": 13000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Cuándo llegó a la base local (fecha_carga)",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#4A5B73"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

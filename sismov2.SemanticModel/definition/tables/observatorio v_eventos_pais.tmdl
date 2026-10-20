@@ -24,6 +24,136 @@ table 'observatorio v_eventos_pais'
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	measure 'Último evento UTC' = MAX('observatorio v_eventos_pais'[fecha_evento])
+		formatString: dd mmm yyyy, HH:mm
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2001
+
+	measure 'Magnitud promedio' = AVERAGE('observatorio v_eventos_pais'[magnitud])
+		formatString: 0.00
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2002
+
+	measure 'Profundidad promedio km' = AVERAGE('observatorio v_eventos_pais'[profundidad_km])
+		formatString: 0.0
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2003
+
+	measure '% sin magnitud' = DIVIDE(COALESCE(CALCULATE([Eventos], ISBLANK('observatorio v_eventos_pais'[magnitud])), 0), [Eventos])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2004
+
+	measure '% sin profundidad' = DIVIDE(COALESCE(CALCULATE([Eventos], ISBLANK('observatorio v_eventos_pais'[profundidad_km])), 0), [Eventos])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2005
+
+	measure 'Eventos Latinoamérica' = CALCULATE([Eventos], 'observatorio v_eventos_pais'[grupo] <> "Resto del mundo")
+		formatString: #,0
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2011
+
+	measure 'Eventos resto del mundo' = CALCULATE([Eventos], 'observatorio v_eventos_pais'[grupo] = "Resto del mundo")
+		formatString: #,0
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2012
+
+	measure '% Latinoamérica del mundo' = DIVIDE([Eventos Latinoamérica], [Eventos])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2013
+
+	measure '% Colombia en Latinoamérica' = DIVIDE([Eventos Colombia], [Eventos Latinoamérica])
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2014
+
+	measure 'Eventos profundidad negativa' = CALCULATE([Eventos], 'observatorio v_eventos_pais'[profundidad_km] < 0)
+		formatString: #,0
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2015
+
+	measure 'Período UTC' = FORMAT(MIN('observatorio v_eventos_pais'[fecha_evento]), "dd mmm yyyy") & " – " & FORMAT(MAX('observatorio v_eventos_pais'[fecha_evento]), "dd mmm yyyy")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2016
+
+	measure 'Título Panorama' = IF(ISBLANK([Eventos Colombia]), "Sin eventos de Colombia con los filtros actuales", "Colombia registra " & FORMAT([Eventos Colombia], "#,0", "es-CO") & " de los " & FORMAT([Eventos], "#,0", "es-CO") & " sismos del mundo en el período")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2017
+
+	measure 'Título Análisis' = IF(ISBLANK([% Colombia]), "Sin eventos de Colombia con los filtros actuales", "Colombia pesa " & FORMAT([% Colombia], "0.0%", "es-CO") & " del mundo: ¿se comporta distinto?")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2018
+
+	measure 'Texto peso Colombia' = IF(ISBLANK([% Colombia]), "Sin eventos de Colombia con los filtros actuales.", "Unos " & FORMAT(ROUND([% Colombia] * 1000, 0), "#,0", "es-CO") & " de cada 1.000 sismos del mundo ocurrieron en Colombia.")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2019
+
+	measure 'Lectura magnitud' = IF(ISBLANK([Magnitud máx. Colombia]), "Sin eventos en Colombia con los filtros actuales.", "Mayor sismo en Colombia: " & FORMAT([Magnitud máx. Colombia], "0.0", "es-CO") & ". Máximo mundial: " & FORMAT([Magnitud máxima], "0.0", "es-CO") & " (" & FORMAT([Magnitud máxima] - [Magnitud máx. Colombia], "0.0", "es-CO") & " más).")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2020
+
+	measure 'Lectura Latinoamérica' = IF(ISBLANK([Eventos Latinoamérica]), "Sin eventos de Latinoamérica con los filtros actuales.", "Latinoamérica: " & FORMAT([Eventos Latinoamérica], "#,0", "es-CO") & " eventos (" & FORMAT([% Latinoamérica del mundo], "0.0%", "es-CO") & " del mundo). Colombia aporta " & FORMAT([Eventos Colombia], "#,0", "es-CO") & ", el " & FORMAT(COALESCE([% Colombia en Latinoamérica], 0), "0%", "es-CO") & " de ellos.")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2021
+
+	measure 'KPI Eventos' = FORMAT([Eventos], "#,0", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2040
+
+	measure 'KPI Magnitud máxima' = FORMAT([Magnitud máxima], "0.0", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2041
+
+	measure 'KPI Eventos Colombia' = FORMAT(COALESCE([Eventos Colombia], 0), "#,0", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2042
+
+	measure 'KPI Magnitud máx. Colombia' = IF(ISBLANK([Magnitud máx. Colombia]), "–", FORMAT([Magnitud máx. Colombia], "0.0", "es-CO"))
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2043
+
+	measure 'KPI % Colombia' = FORMAT(COALESCE([% Colombia], 0), "0.0%", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2044
+
+	measure 'KPI % sin magnitud' = FORMAT([% sin magnitud], "0.0%", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2045
+
+	measure 'KPI % sin profundidad' = FORMAT([% sin profundidad], "0.0%", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2046
+
+	measure 'Eventos sin magnitud' = COALESCE(CALCULATE([Eventos], ISBLANK('observatorio v_eventos_pais'[magnitud])), 0)
+		formatString: #,0
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2047
+
+	measure 'Eventos sin profundidad' = COALESCE(CALCULATE([Eventos], ISBLANK('observatorio v_eventos_pais'[profundidad_km])), 0)
+		formatString: #,0
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2048
+
+	measure 'Eventos magnitud negativa' = COALESCE(CALCULATE([Eventos], 'observatorio v_eventos_pais'[magnitud] < 0), 0)
+		formatString: #,0
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2049
+
+	measure 'Texto sin magnitud' = FORMAT([Eventos sin magnitud], "#,0", "es-CO") & " de " & FORMAT([Eventos], "#,0", "es-CO") & " eventos · " & FORMAT([Eventos magnitud negativa], "#,0", "es-CO") & " negativas"
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2050
+
+	measure 'Texto sin profundidad' = FORMAT([Eventos sin profundidad], "#,0", "es-CO") & " de " & FORMAT([Eventos], "#,0", "es-CO") & " eventos · " & FORMAT([Eventos profundidad negativa], "#,0", "es-CO") & " negativas"
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2051
+
+	measure 'Texto rezago' = "Cargado " & FORMAT(DATEDIFF(MAX('observatorio v_eventos_pais'[fecha_evento]), MAX('observatorio v_eventos_pais'[fecha_carga]), MINUTE), "#,0", "es-CO") & " min después del último evento"
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2052
+
+	measure 'Última revisión fuente UTC' = MAX('observatorio v_eventos_pais'[actualizado_fuente])
+		formatString: dd mmm yyyy, HH:mm
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2053
+
+	measure 'Última carga de eventos UTC' = MAX('observatorio v_eventos_pais'[fecha_carga])
+		formatString: dd mmm yyyy, HH:mm
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2054
+
+	measure 'Tabla eventos' = FORMAT([Eventos], "#,0", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2055
+
+	measure 'Tabla mag. prom.' = FORMAT([Magnitud promedio], "0.00", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2056
+
+	measure 'Tabla mag. máx.' = FORMAT([Magnitud máxima], "0.0", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2057
+
+	measure 'Tabla prof. prom. km' = FORMAT([Profundidad promedio km], "0.0", "es-CO")
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2058
+
+	measure 'Ids duplicados' = COUNTROWS('observatorio v_eventos_pais') - DISTINCTCOUNT('observatorio v_eventos_pais'[id])
+		formatString: #,0
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2060
+
+	measure 'Texto ids' = FORMAT(COUNTROWS('observatorio v_eventos_pais'), "#,0", "es-CO") & " eventos · " & FORMAT(DISTINCTCOUNT('observatorio v_eventos_pais'[id]), "#,0", "es-CO") & " ids únicos"
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2061
+
+	measure 'Rezago carga' = FORMAT(DATEDIFF(MAX('observatorio v_eventos_pais'[fecha_evento]), MAX('observatorio v_eventos_pais'[fecha_carga]), MINUTE), "#,0", "es-CO") & " min"
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2062
+
 	column id
 		dataType: string
 		sourceProviderType: nvarchar(max)
@@ -170,6 +300,64 @@ table 'observatorio v_eventos_pais'
 		lineageTag: 7c075ce1-7705-4224-9828-8153a0d631d5
 		summarizeBy: none
 		sourceColumn: grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	column rango_magnitud
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2006
+		summarizeBy: none
+		sourceColumn: rango_magnitud
+
+		annotation SummarizationSetBy = Automatic
+
+	column rango_profundidad_km
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2007
+		summarizeBy: none
+		sourceColumn: rango_profundidad_km
+
+		annotation SummarizationSetBy = Automatic
+
+	column tramo_profundidad
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2008
+		summarizeBy: none
+		sourceColumn: tramo_profundidad
+		sortByColumn: orden_tramo
+
+		annotation SummarizationSetBy = Automatic
+
+	column orden_tramo
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2009
+		summarizeBy: none
+		sourceColumn: orden_tramo
+
+		annotation SummarizationSetBy = Automatic
+
+	column intervalo_magnitud
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2030
+		summarizeBy: none
+		sourceColumn: intervalo_magnitud
+		sortByColumn: orden_magnitud
+
+		annotation SummarizationSetBy = Automatic
+
+	column orden_magnitud
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 4c8d1e62-7e1d-4b54-8b63-4d2f8b1e2031
+		summarizeBy: none
+		sourceColumn: orden_magnitud
 
 		annotation SummarizationSetBy = Automatic
 

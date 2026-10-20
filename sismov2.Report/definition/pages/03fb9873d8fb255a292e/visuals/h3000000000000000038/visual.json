@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "h3000000000000000038",
+  "position": {
+    "x": 432,
+    "y": 884,
+    "z": 16000,
+    "height": 130,
+    "width": 872,
+    "tabOrder": 16000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Cómo se actualiza",
+                    "textStyle": {
+                      "fontSize": "14pt",
+                      "color": "#0B1B33",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "USGS → script de R (cargar() una vez, continuar(300) cada 5 minutos) → PostgreSQL local → Power BI en DirectQuery, con refresco de página cada 1 minuto.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Si falla una descarga, la base conserva los datos previos y la falla aparece en Cargas fallidas.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#0B1B33"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

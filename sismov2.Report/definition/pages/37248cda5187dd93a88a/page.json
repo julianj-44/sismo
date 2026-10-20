@@ -14,7 +14,7 @@
               "name": {
                 "expr": {
                   "Literal": {
-                    "Value": "'1.png'"
+                    "Value": "'fondo1_v2.png'"
                   }
                 }
               },
@@ -23,7 +23,7 @@
                   "ResourcePackageItem": {
                     "PackageName": "RegisteredResources",
                     "PackageType": 1,
-                    "ItemName": "18603565767293222.png"
+                    "ItemName": "fondo1_v2.png"
                   }
                 }
               },

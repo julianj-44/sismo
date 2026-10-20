@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "f1000000000000000023",
+  "position": {
+    "x": 1448,
+    "y": 934,
+    "z": 13000,
+    "height": 86,
+    "width": 392,
+    "tabOrder": 13000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Una magnitud mayor no equivale a proporcionalmente más energía ni más intensidad sentida. Análisis descriptivo: no es predicción ni alerta temprana.",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#4a5b73"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "f1000000000000000011",
+  "position": {
+    "x": 416,
+    "y": 134,
+    "z": 26000,
+    "height": 30,
+    "width": 1448,
+    "tabOrder": 26000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Fuente USGS · solo type = earthquake · ventana móvil de 30 días acumulada · fechas y horas en UTC",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#4A5B73"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

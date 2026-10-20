@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "1422e730d7ece591e9ba",
   "position": {
-    "x": 473.32439110483585,
-    "y": 458.68549241087186,
-    "z": 4003,
-    "height": 487.96328979879985,
-    "width": 795.38016237204374,
-    "tabOrder": 4003
+    "x": 432,
+    "y": 414,
+    "z": 14000,
+    "height": 604,
+    "width": 952,
+    "tabOrder": 14000
   },
   "visual": {
     "visualType": "scriptVisual",
@@ -26,7 +26,7 @@
                   "Property": "latitud"
                 }
               },
-              "queryRef": "Sum(observatorio v_eventos_pais.latitud)",
+              "queryRef": "observatorio v_eventos_pais.latitud",
               "nativeQueryRef": "latitud"
             },
             {
@@ -40,7 +40,7 @@
                   "Property": "longitud"
                 }
               },
-              "queryRef": "Sum(observatorio v_eventos_pais.longitud)",
+              "queryRef": "observatorio v_eventos_pais.longitud",
               "nativeQueryRef": "longitud"
             },
             {
@@ -54,7 +54,7 @@
                   "Property": "magnitud"
                 }
               },
-              "queryRef": "Sum(observatorio v_eventos_pais.magnitud)",
+              "queryRef": "observatorio v_eventos_pais.magnitud",
               "nativeQueryRef": "magnitud"
             },
             {
@@ -69,7 +69,7 @@
                 }
               },
               "queryRef": "observatorio v_eventos_pais.grupo",
-              "nativeQueryRef": "grupo1"
+              "nativeQueryRef": "grupo"
             },
             {
               "field": {
@@ -79,11 +79,11 @@
                       "Entity": "observatorio v_eventos_pais"
                     }
                   },
-                  "Property": "lugar"
+                  "Property": "fecha_evento"
                 }
               },
-              "queryRef": "observatorio v_eventos_pais.lugar",
-              "nativeQueryRef": "lugar"
+              "queryRef": "observatorio v_eventos_pais.fecha_evento",
+              "nativeQueryRef": "fecha_evento"
             }
           ]
         }
@@ -114,7 +114,7 @@
             "source": {
               "expr": {
                 "Literal": {
-                  "Value": "'# El código siguiente, que crea un dataframe y quita las filas duplicadas, siempre se ejecuta y actúa como un preámbulo del script: \n\n# dataset <- data.frame(latitud, longitud, magnitud, grupo, lugar)\n# dataset <- unique(dataset)\n\n# Pegue o escriba aquí el código de script:\n\n# Visual de R de Power BI: mapa de sismos de Latinoamérica (ggplot2, imagen estática)\n# Campos en Valores (todos con \"No resumir\"): latitud, longitud, grupo, magnitud\n# Paquetes: install.packages(c(\"ggplot2\", \"maps\"))\n# Para la versión interactiva (plotly) ver mapa_latam_plotly.txt: no se muestra dentro de Power BI.\n\n# dataset <- data.frame(latitud, longitud)\n# dataset <- unique(dataset)\n\n# Pegue o escriba aquí el código de script:\n\n\nlibrary(ggplot2)\nlibrary(maps)\n\n# Solo Latinoamérica y sin magnitud faltante (no se reemplaza por 0: se omite del mapa)\ndataset <- dataset[dataset$grupo != \"Resto del mundo\" & !is.na(dataset$magnitud), ]\n\n# Colombia se dibuja al final para que quede encima\ndataset$grupo <- factor(dataset$grupo, levels = c(\"Resto de Latinoamérica\", \"Colombia\"))\ndataset <- dataset[order(dataset$grupo), ]\n\n# Silueta de la región: solo los países de paises_latam con incluir = TRUE\npaises <- c(\"Mexico\", \"Guatemala\", \"Belize\", \"Honduras\", \"El Salvador\", \"Nicaragua\",\n            \"Costa Rica\", \"Panama\", \"Colombia\", \"Venezuela\", \"Guyana\", \"Suriname\",\n            \"Ecuador\", \"Peru\", \"Brazil\", \"Bolivia\", \"Paraguay\", \"Chile\", \"Argentina\",\n            \"Uruguay\", \"Cuba\", \"Haiti\", \"Dominica\", \"Jamaica\", \"Bahamas\", \"Trinidad\",\n            \"Tobago\", \"Barbados\", \"Saint Lucia\", \"Grenada\", \"Saint Vincent\", \"Grenadines\",\n            \"Antigua\", \"Barbuda\", \"Saint Kitts\", \"Nevis\")\nregion   <- map_data(\"world\", region = paises)\ncolombia <- region[region$region == \"Colombia\", ]\n\n# Nota: linewidth necesita ggplot2 3.4 o superior; en versiones anteriores usar size.\n# Tamaño de los puntos: range = c(mínimo, máximo); más finos = bajar el segundo valor (ej. c(0.8, 4)).\nggplot() +\n  geom_polygon(data = region,   aes(long, lat, group = group),\n               fill = \"#E2E8F0\", colour = \"white\", linewidth = 0.3) +\n  geom_polygon(data = colombia, aes(long, lat, group = group),\n               fill = \"#FED7AA\", colour = \"white\", linewidth = 0.3) +\n  geom_point(data = dataset,\n             aes(x = longitud, y = latitud, fill = grupo, size = magnitud),\n             shape = 21, colour = \"white\", stroke = 0.3, alpha = 0.8) +\n  annotate(\"text\", x = -69.5, y = 2, label = \"COLOMBIA\",\n           colour = \"#C2410C\", size = 3.2, fontface = \"bold\") +\n  scale_fill_manual(values = c(\"Resto de Latinoamérica\" = \"#3B82F6\", \"Colombia\" = \"#F97316\"),\n                    name = NULL,\n                    guide = guide_legend(order = 1, nrow = 1, override.aes = list(size = 3))) +\n  scale_size_continuous(range = c(0.8, 5.5), breaks = c(4, 5, 6, 7), name = \"Magnitud\",\n                        guide = guide_legend(order = 2, nrow = 1, title.position = \"left\",\n                                             override.aes = list(fill = \"#94A3B8\", colour = \"white\"))) +\n  coord_quickmap(xlim = c(-118, -32), ylim = c(-57, 36), expand = FALSE) +\n  theme_void() +\n  theme(legend.position = \"bottom\", legend.box = \"horizontal\",\n        legend.spacing.x = unit(22, \"pt\"), legend.margin = margin(t = 6, b = 6),\n        legend.text  = element_text(colour = \"#475569\", size = 9),\n        legend.title = element_text(colour = \"#475569\", size = 9, vjust = 0.5),\n        plot.background = element_rect(fill = \"white\", colour = NA))\n\n'"
+                  "Value": "'# Visual de R de Power BI: mapa de sismos de Latinoamérica (ggplot2, imagen estática)\n# Campos en Valores (todos con \"No resumir\"): latitud, longitud, grupo, magnitud, fecha_evento\n# Paquetes: install.packages(c(\"ggplot2\", \"maps\"))\n# Para la versión interactiva (plotly) ver mapa_latam_plotly.txt: no se muestra dentro de Power BI.\n#\n# Cómo se lee el mapa:\n#   color   = grupo (naranja Colombia, azul resto de Latinoamérica)\n#   tamaño  = clase de magnitud: menos de 4 / 4 a 4,9 / 5 a 5,9 (borde oscuro) / 6 o más (rombo grande)\n#   anillo  = evento de las últimas 72 h respecto al evento más reciente del conjunto\n#   rombo con etiqueta = el sismo de mayor magnitud (si es de 6 o más)\n\n# dataset <- data.frame(latitud, longitud, grupo, magnitud, fecha_evento)\n# dataset <- unique(dataset)\n\n# Pegue o escriba aquí el código de script:\n\nlibrary(ggplot2)\nlibrary(maps)\n\n# --- Fechas (llegan como hora UTC sin zona; se trata como UTC) ----------------------------\nif (!\"fecha_evento\" %in% names(dataset)) dataset$fecha_evento <- NA\nfe <- dataset$fecha_evento   # fecha/hora (Power BI) o texto (editor externo)\ndataset$fecha <- if (inherits(fe, c(\"POSIXt\", \"Date\"))) {\n  as.POSIXct(format(fe, \"%Y-%m-%d %H:%M:%S\"), tz = \"UTC\")\n} else as.POSIXct(as.character(fe), tz = \"UTC\")\n\n# Referencia de actualidad: el evento más reciente de todo el conjunto, antes de filtrar\nref <- if (all(is.na(dataset$fecha))) NA else max(dataset$fecha, na.rm = TRUE)\n\n# Solo Latinoamérica y sin magnitud faltante (no se reemplaza por 0: se omite del mapa)\ndataset <- dataset[dataset$grupo != \"Resto del mundo\" & !is.na(dataset$magnitud), ]\n\n# --- Clases de magnitud ---------------------------------------------------------------------\netiquetas <- c(\"Menos de 4\", \"4 a 4,9\", \"5 a 5,9\", \"6 o más\")\ndataset$clase <- cut(dataset$magnitud, breaks = c(-Inf, 4, 5, 6, Inf), right = FALSE, labels = etiquetas)\ndataset$es_col <- dataset$grupo == \"Colombia\"\ndataset$grupo <- factor(dataset$grupo, levels = c(\"Resto de Latinoamérica\", \"Colombia\"))\n\n# Borde: oscuro para Colombia y para magnitud 5 o más; blanco para el resto\ndataset$borde <- ifelse(dataset$es_col | dataset$clase %in% c(\"5 a 5,9\", \"6 o más\"), \"#07142B\", \"white\")\n\n# Tamaño de cada clase (también se usa para el anillo de actualidad)\ntam_clase <- c(1.6, 2.8, 4.6, 7)\ndataset$tam <- tam_clase[as.integer(dataset$clase)]\n\n# Orden de dibujo: pequeños primero; Colombia y los más grandes quedan encima\ndataset <- dataset[order(dataset$es_col, as.integer(dataset$clase)), ]\n\n# Eventos de las últimas 72 h (rep(): con filtros puede quedar 0 filas y no basta un solo FALSE)\ndataset$reciente <- if (is.na(ref)) rep(FALSE, nrow(dataset)) else\n  !is.na(dataset$fecha) & as.numeric(difftime(ref, dataset$fecha, units = \"hours\")) <= 72\nrecientes <- dataset[dataset$reciente, ]\n\n# Sismo de mayor magnitud (solo se rotula si es de 6 o más)\ntop <- dataset[dataset$magnitud >= 6, ]\ntop <- top[order(-top$magnitud), ][seq_len(min(1, nrow(top))), ]\nmeses <- c(\"ene\", \"feb\", \"mar\", \"abr\", \"may\", \"jun\", \"jul\", \"ago\", \"sep\", \"oct\", \"nov\", \"dic\")\ncapas_top <- list()\nif (nrow(top) > 0) {\n  top$lx <- pmax(top$longitud - 9, -116)   # la etiqueta se corre hacia el océano, a la izquierda\n  top$ly <- top$latitud - 7\n  top$txt <- paste0(\"M\", formatC(top$magnitud, format = \"f\", digits = 1, decimal.mark = \",\"),\n                    ifelse(is.na(top$fecha), \"\",\n                           paste0(\" · \", format(top$fecha, \"%d\"), \" \", meses[as.integer(format(top$fecha, \"%m\"))])))\n  capas_top <- list(\n    geom_segment(data = top, aes(x = longitud, y = latitud, xend = lx, yend = ly),\n                 colour = \"#07142B\", linewidth = 0.3),\n    do.call(geom_label, c(\n      list(data = top, mapping = aes(x = lx, y = ly, label = txt), fill = \"white\", colour = \"#07142B\",\n           fontface = \"bold\", size = 3.6, label.padding = unit(0.25, \"lines\")),\n      # borde de la etiqueta: el argumento cambió de nombre en ggplot2 3.5\n      if (packageVersion(\"ggplot2\") >= \"3.5.0\") list(linewidth = 0) else list(label.size = 0)))\n  )\n}\n\n# --- Silueta de la región: solo los países de paises_latam con incluir = TRUE ---------------\npaises <- c(\"Mexico\", \"Guatemala\", \"Belize\", \"Honduras\", \"El Salvador\", \"Nicaragua\",\n            \"Costa Rica\", \"Panama\", \"Colombia\", \"Venezuela\", \"Guyana\", \"Suriname\",\n            \"Ecuador\", \"Peru\", \"Brazil\", \"Bolivia\", \"Paraguay\", \"Chile\", \"Argentina\",\n            \"Uruguay\", \"Cuba\", \"Haiti\", \"Dominica\", \"Jamaica\", \"Bahamas\", \"Trinidad\",\n            \"Tobago\", \"Barbados\", \"Saint Lucia\", \"Grenada\", \"Saint Vincent\", \"Grenadines\",\n            \"Antigua\", \"Barbuda\", \"Saint Kitts\", \"Nevis\")\nregion   <- map_data(\"world\", region = paises)\ncolombia <- region[region$region == \"Colombia\", ]\n\n# Nota: linewidth necesita ggplot2 3.4 o superior; en versiones anteriores usar size.\nggplot() +\n  geom_polygon(data = region,   aes(long, lat, group = group),\n               fill = \"#D5DFEE\", colour = \"#B7C4D8\", linewidth = 0.25) +\n  geom_polygon(data = colombia, aes(long, lat, group = group),\n               fill = \"#FFE3CC\", colour = \"#FF7A1A\", linewidth = 0.5) +\n  geom_point(data = dataset,\n             aes(x = longitud, y = latitud, fill = grupo, size = clase, shape = clase,\n                 alpha = clase, colour = borde),\n             stroke = 0.5) +\n  geom_point(data = recientes, aes(x = longitud, y = latitud),\n             shape = 21, fill = NA, colour = \"#0B1B33\", stroke = 0.9, size = recientes$tam + 3) +\n  capas_top +\n  annotate(\"text\", x = -69.5, y = 2, label = \"COLOMBIA\",\n           colour = \"#C2410C\", size = 3.4, fontface = \"bold\") +\n  scale_colour_identity() +\n  # limits + drop = FALSE: la leyenda conserva siempre todas las clases, aunque un filtro deje alguna\n  # vacía; sin esto, los vectores de override.aes (4 valores) no coinciden y el visual falla.\n  scale_fill_manual(values = c(\"Resto de Latinoamérica\" = \"#2F6FDE\", \"Colombia\" = \"#FF7A1A\"),\n                    limits = c(\"Resto de Latinoamérica\", \"Colombia\"), drop = FALSE, name = NULL,\n                    guide = guide_legend(order = 1, override.aes = list(size = 3.5, shape = 21, colour = \"#07142B\"))) +\n  scale_size_manual(values = tam_clase, limits = etiquetas, drop = FALSE, name = \"Magnitud\",\n                    guide = guide_legend(order = 2, override.aes = list(\n                      shape = c(21, 21, 21, 23), alpha = c(0.45, 0.75, 0.9, 1),\n                      fill = \"#94A3B8\", colour = \"#07142B\"))) +\n  scale_shape_manual(values = c(21, 21, 21, 23), limits = etiquetas, drop = FALSE, guide = \"none\") +\n  scale_alpha_manual(values = c(0.45, 0.75, 0.9, 1), limits = etiquetas, drop = FALSE, guide = \"none\") +\n  coord_quickmap(xlim = c(-120, -32), ylim = c(-57, 35), expand = FALSE) +\n  labs(caption = \"Anillo: últimos 72 h respecto al evento más reciente\") +\n  theme_void() +\n  # leyenda a la derecha del mapa: aprovecha el ancho de la tarjeta\n  theme(legend.position = \"right\", legend.justification = c(0, 0.5),\n        legend.box = \"vertical\", legend.box.just = \"left\",\n        legend.background = element_rect(fill = alpha(\"white\", 0.85), colour = NA),\n        legend.margin = margin(5, 7, 5, 7), legend.key.size = unit(13, \"pt\"),\n        legend.text  = element_text(colour = \"#475569\", size = 10),\n        legend.title = element_text(colour = \"#475569\", size = 10, face = \"bold\"),\n        plot.caption = element_text(colour = \"#64748B\", size = 9, hjust = 0, margin = margin(t = 4)),\n        panel.background = element_rect(fill = \"#EAF0F8\", colour = NA),\n        plot.background  = element_rect(fill = \"white\", colour = NA))\n'"
                 }
               }
             },
@@ -122,6 +122,21 @@
               "expr": {
                 "Literal": {
                   "Value": "'R'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

@@ -1,2 +1,518 @@
 cultureInfo es-ES
 
+	linguisticMetadata =
+			{
+			  "Version": "2.0.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "observatorio_v_eventos_pais.eventos_colombia": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Eventos Colombia"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Colombia (eje derecho)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.magnitud_máx__colombia": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Magnitud máx. Colombia"
+			        }
+			      },
+			      "State": "Generated"
+			    },
+			    "observatorio_v_eventos_pais.grupo": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "grupo"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Grupo": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.magnitud_promedio": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Magnitud promedio"
+			        }
+			      },
+			      "State": "Generated"
+			    },
+			    "observatorio_v_eventos_pais.magnitud_máxima": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Magnitud máxima"
+			        }
+			      },
+			      "State": "Generated"
+			    },
+			    "observatorio_v_eventos_pais.profundidad_promedio_km": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Profundidad promedio km"
+			        }
+			      },
+			      "State": "Generated"
+			    },
+			    "observatorio_v_cargas.cargas_exitosas": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_cargas",
+			          "ConceptualProperty": "Cargas exitosas"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Exitosas": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_cargas.cargas_fallidas": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_cargas",
+			          "ConceptualProperty": "Cargas fallidas"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Fallidas": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_cargas.última_carga_con_datos_nuevos_utc": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_cargas",
+			          "ConceptualProperty": "Última carga con datos nuevos UTC"
+			        }
+			      },
+			      "State": "Generated"
+			    },
+			    "observatorio_v_eventos_pais.eventos": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Eventos"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Mundo (eje izquierdo)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.kpi_eventos": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "KPI Eventos"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Eventos": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.kpi_magnitud_máxima": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "KPI Magnitud máxima"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Magnitud máxima": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.kpi_eventos_colombia": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "KPI Eventos Colombia"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Eventos": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.kpi_magnitud_máx__colombia": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "KPI Magnitud máx. Colombia"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Mag. máx.": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.tabla_eventos": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Tabla eventos"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Eventos": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.tabla_mag__prom_": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Tabla mag. prom."
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Mag. prom.": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.tabla_mag__máx_": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Tabla mag. máx."
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Mag. máx.": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.tabla_prof__prom__km": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Tabla prof. prom. km"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Prof. (km)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.kpi__sin_magnitud": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "KPI % sin magnitud"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Eventos sin magnitud": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.kpi__sin_profundidad": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "KPI % sin profundidad"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Eventos sin profundidad": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.último_evento_utc": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Último evento UTC"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "1 · Evento": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.última_revisión_fuente_utc": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Última revisión fuente UTC"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "2 · Revisión en la fuente": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.última_carga_de_eventos_utc": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Última carga de eventos UTC"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "3 · Carga": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.ids_duplicados": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Ids duplicados"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Ids duplicados": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_eventos_pais.rezago_carga": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_eventos_pais",
+			          "ConceptualProperty": "Rezago carga"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Rezago evento → carga": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_cargas.antigüedad_última_carga": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_cargas",
+			          "ConceptualProperty": "Antigüedad última carga"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Última carga exitosa": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "observatorio_v_cargas.cargas_con_datos_nuevos": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "observatorio v_cargas",
+			          "ConceptualProperty": "Cargas con datos nuevos"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Con datos nuevos": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    }
+			  }
+			}
+		contentType: json
+

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "g2000000000000000011",
+  "position": {
+    "x": 416,
+    "y": 134,
+    "z": 16000,
+    "height": 30,
+    "width": 1448,
+    "tabOrder": 16000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Misma ventana y mismos filtros para tres subconjuntos: Colombia, resto de Latinoamérica y resto del mundo · análisis descriptivo, no predictivo",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#4A5B73"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

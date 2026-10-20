@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "h3000000000000000020",
+  "position": {
+    "x": 432,
+    "y": 822,
+    "z": 23000,
+    "height": 44,
+    "width": 872,
+    "tabOrder": 23000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Afectados = 0 no es un error: solo significa que no había nada nuevo en esa carga. Ordenado de la más reciente a la más antigua.",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#4A5B73"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "h3000000000000000008",
+  "position": {
+    "x": 28,
+    "y": 1000,
+    "z": 31000,
+    "height": 60,
+    "width": 304,
+    "tabOrder": 31000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Actualización automática cada 1 min.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#A9B8D0"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Fuente: USGS · Horas en UTC.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#A9B8D0"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

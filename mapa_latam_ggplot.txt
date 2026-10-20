@@ -1,25 +1,79 @@
 # Visual de R de Power BI: mapa de sismos de Latinoamérica (ggplot2, imagen estática)
-# Campos en Valores (todos con "No resumir"): latitud, longitud, grupo, magnitud
+# Campos en Valores (todos con "No resumir"): latitud, longitud, grupo, magnitud, fecha_evento
 # Paquetes: install.packages(c("ggplot2", "maps"))
 # Para la versión interactiva (plotly) ver mapa_latam_plotly.txt: no se muestra dentro de Power BI.
+#
+# Cómo se lee el mapa:
+#   color   = grupo (naranja Colombia, azul resto de Latinoamérica)
+#   tamaño  = clase de magnitud: menos de 4 / 4 a 4,9 / 5 a 5,9 (borde oscuro) / 6 o más (rombo grande)
+#   anillo  = evento de las últimas 72 h respecto al evento más reciente del conjunto
+#   rombo con etiqueta = el sismo de mayor magnitud (si es de 6 o más)
 
-# dataset <- data.frame(latitud, longitud)
+# dataset <- data.frame(latitud, longitud, grupo, magnitud, fecha_evento)
 # dataset <- unique(dataset)
 
 # Pegue o escriba aquí el código de script:
 
-
 library(ggplot2)
 library(maps)
+
+# --- Fechas (llegan como hora UTC sin zona; se trata como UTC) ----------------------------
+if (!"fecha_evento" %in% names(dataset)) dataset$fecha_evento <- NA
+fe <- dataset$fecha_evento   # fecha/hora (Power BI) o texto (editor externo)
+dataset$fecha <- if (inherits(fe, c("POSIXt", "Date"))) {
+  as.POSIXct(format(fe, "%Y-%m-%d %H:%M:%S"), tz = "UTC")
+} else as.POSIXct(as.character(fe), tz = "UTC")
+
+# Referencia de actualidad: el evento más reciente de todo el conjunto, antes de filtrar
+ref <- if (all(is.na(dataset$fecha))) NA else max(dataset$fecha, na.rm = TRUE)
 
 # Solo Latinoamérica y sin magnitud faltante (no se reemplaza por 0: se omite del mapa)
 dataset <- dataset[dataset$grupo != "Resto del mundo" & !is.na(dataset$magnitud), ]
 
-# Colombia se dibuja al final para que quede encima
+# --- Clases de magnitud ---------------------------------------------------------------------
+etiquetas <- c("Menos de 4", "4 a 4,9", "5 a 5,9", "6 o más")
+dataset$clase <- cut(dataset$magnitud, breaks = c(-Inf, 4, 5, 6, Inf), right = FALSE, labels = etiquetas)
+dataset$es_col <- dataset$grupo == "Colombia"
 dataset$grupo <- factor(dataset$grupo, levels = c("Resto de Latinoamérica", "Colombia"))
-dataset <- dataset[order(dataset$grupo), ]
 
-# Silueta de la región: solo los países de paises_latam con incluir = TRUE
+# Borde: oscuro para Colombia y para magnitud 5 o más; blanco para el resto
+dataset$borde <- ifelse(dataset$es_col | dataset$clase %in% c("5 a 5,9", "6 o más"), "#07142B", "white")
+
+# Tamaño de cada clase (también se usa para el anillo de actualidad)
+tam_clase <- c(1.6, 2.8, 4.6, 7)
+dataset$tam <- tam_clase[as.integer(dataset$clase)]
+
+# Orden de dibujo: pequeños primero; Colombia y los más grandes quedan encima
+dataset <- dataset[order(dataset$es_col, as.integer(dataset$clase)), ]
+
+# Eventos de las últimas 72 h (rep(): con filtros puede quedar 0 filas y no basta un solo FALSE)
+dataset$reciente <- if (is.na(ref)) rep(FALSE, nrow(dataset)) else
+  !is.na(dataset$fecha) & as.numeric(difftime(ref, dataset$fecha, units = "hours")) <= 72
+recientes <- dataset[dataset$reciente, ]
+
+# Sismo de mayor magnitud (solo se rotula si es de 6 o más)
+top <- dataset[dataset$magnitud >= 6, ]
+top <- top[order(-top$magnitud), ][seq_len(min(1, nrow(top))), ]
+meses <- c("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic")
+capas_top <- list()
+if (nrow(top) > 0) {
+  top$lx <- pmax(top$longitud - 9, -116)   # la etiqueta se corre hacia el océano, a la izquierda
+  top$ly <- top$latitud - 7
+  top$txt <- paste0("M", formatC(top$magnitud, format = "f", digits = 1, decimal.mark = ","),
+                    ifelse(is.na(top$fecha), "",
+                           paste0(" · ", format(top$fecha, "%d"), " ", meses[as.integer(format(top$fecha, "%m"))])))
+  capas_top <- list(
+    geom_segment(data = top, aes(x = longitud, y = latitud, xend = lx, yend = ly),
+                 colour = "#07142B", linewidth = 0.3),
+    do.call(geom_label, c(
+      list(data = top, mapping = aes(x = lx, y = ly, label = txt), fill = "white", colour = "#07142B",
+           fontface = "bold", size = 3.6, label.padding = unit(0.25, "lines")),
+      # borde de la etiqueta: el argumento cambió de nombre en ggplot2 3.5
+      if (packageVersion("ggplot2") >= "3.5.0") list(linewidth = 0) else list(label.size = 0)))
+  )
+}
+
+# --- Silueta de la región: solo los países de paises_latam con incluir = TRUE ---------------
 paises <- c("Mexico", "Guatemala", "Belize", "Honduras", "El Salvador", "Nicaragua",
             "Costa Rica", "Panama", "Colombia", "Venezuela", "Guyana", "Suriname",
             "Ecuador", "Peru", "Brazil", "Bolivia", "Paraguay", "Chile", "Argentina",
@@ -30,27 +84,42 @@ region   <- map_data("world", region = paises)
 colombia <- region[region$region == "Colombia", ]
 
 # Nota: linewidth necesita ggplot2 3.4 o superior; en versiones anteriores usar size.
-# Tamaño de los puntos: range = c(mínimo, máximo); más finos = bajar el segundo valor (ej. c(0.8, 4)).
 ggplot() +
   geom_polygon(data = region,   aes(long, lat, group = group),
-               fill = "#E2E8F0", colour = "white", linewidth = 0.3) +
+               fill = "#D5DFEE", colour = "#B7C4D8", linewidth = 0.25) +
   geom_polygon(data = colombia, aes(long, lat, group = group),
-               fill = "#FED7AA", colour = "white", linewidth = 0.3) +
+               fill = "#FFE3CC", colour = "#FF7A1A", linewidth = 0.5) +
   geom_point(data = dataset,
-             aes(x = longitud, y = latitud, fill = grupo, size = magnitud),
-             shape = 21, colour = "white", stroke = 0.3, alpha = 0.8) +
+             aes(x = longitud, y = latitud, fill = grupo, size = clase, shape = clase,
+                 alpha = clase, colour = borde),
+             stroke = 0.5) +
+  geom_point(data = recientes, aes(x = longitud, y = latitud),
+             shape = 21, fill = NA, colour = "#0B1B33", stroke = 0.9, size = recientes$tam + 3) +
+  capas_top +
   annotate("text", x = -69.5, y = 2, label = "COLOMBIA",
-           colour = "#C2410C", size = 3.2, fontface = "bold") +
-  scale_fill_manual(values = c("Resto de Latinoamérica" = "#3B82F6", "Colombia" = "#F97316"),
-                    name = NULL,
-                    guide = guide_legend(order = 1, nrow = 1, override.aes = list(size = 3))) +
-  scale_size_continuous(range = c(0.8, 5.5), breaks = c(4, 5, 6, 7), name = "Magnitud",
-                        guide = guide_legend(order = 2, nrow = 1, title.position = "left",
-                                             override.aes = list(fill = "#94A3B8", colour = "white"))) +
-  coord_quickmap(xlim = c(-118, -32), ylim = c(-57, 36), expand = FALSE) +
+           colour = "#C2410C", size = 3.4, fontface = "bold") +
+  scale_colour_identity() +
+  # limits + drop = FALSE: la leyenda conserva siempre todas las clases, aunque un filtro deje alguna
+  # vacía; sin esto, los vectores de override.aes (4 valores) no coinciden y el visual falla.
+  scale_fill_manual(values = c("Resto de Latinoamérica" = "#2F6FDE", "Colombia" = "#FF7A1A"),
+                    limits = c("Resto de Latinoamérica", "Colombia"), drop = FALSE, name = NULL,
+                    guide = guide_legend(order = 1, override.aes = list(size = 3.5, shape = 21, colour = "#07142B"))) +
+  scale_size_manual(values = tam_clase, limits = etiquetas, drop = FALSE, name = "Magnitud",
+                    guide = guide_legend(order = 2, override.aes = list(
+                      shape = c(21, 21, 21, 23), alpha = c(0.45, 0.75, 0.9, 1),
+                      fill = "#94A3B8", colour = "#07142B"))) +
+  scale_shape_manual(values = c(21, 21, 21, 23), limits = etiquetas, drop = FALSE, guide = "none") +
+  scale_alpha_manual(values = c(0.45, 0.75, 0.9, 1), limits = etiquetas, drop = FALSE, guide = "none") +
+  coord_quickmap(xlim = c(-120, -32), ylim = c(-57, 35), expand = FALSE) +
+  labs(caption = "Anillo: últimos 72 h respecto al evento más reciente") +
   theme_void() +
-  theme(legend.position = "bottom", legend.box = "horizontal",
-        legend.spacing.x = unit(22, "pt"), legend.margin = margin(t = 6, b = 6),
-        legend.text  = element_text(colour = "#475569", size = 9),
-        legend.title = element_text(colour = "#475569", size = 9, vjust = 0.5),
-        plot.background = element_rect(fill = "white", colour = NA))
+  # leyenda a la derecha del mapa: aprovecha el ancho de la tarjeta
+  theme(legend.position = "right", legend.justification = c(0, 0.5),
+        legend.box = "vertical", legend.box.just = "left",
+        legend.background = element_rect(fill = alpha("white", 0.85), colour = NA),
+        legend.margin = margin(5, 7, 5, 7), legend.key.size = unit(13, "pt"),
+        legend.text  = element_text(colour = "#475569", size = 10),
+        legend.title = element_text(colour = "#475569", size = 10, face = "bold"),
+        plot.caption = element_text(colour = "#64748B", size = 9, hjust = 0, margin = margin(t = 4)),
+        panel.background = element_rect(fill = "#EAF0F8", colour = NA),
+        plot.background  = element_rect(fill = "white", colour = NA))

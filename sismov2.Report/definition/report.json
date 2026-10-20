@@ -11,7 +11,7 @@
       "type": "SharedResources"
     },
     "customTheme": {
-      "name": "City_Park7689916897192234.json",
+      "name": "Observatorio_v2.json",
       "reportVersionAtImport": {
         "visual": "2.14.0",
         "report": "3.4.0",
@@ -65,13 +65,23 @@
       "type": "RegisteredResources",
       "items": [
         {
-          "name": "18603565767293222.png",
-          "path": "18603565767293222.png",
+          "name": "fondo1_v2.png",
+          "path": "fondo1_v2.png",
           "type": "Image"
         },
         {
-          "name": "City_Park7689916897192234.json",
-          "path": "City_Park7689916897192234.json",
+          "name": "fondo2_v2.png",
+          "path": "fondo2_v2.png",
+          "type": "Image"
+        },
+        {
+          "name": "fondo3_v2.png",
+          "path": "fondo3_v2.png",
+          "type": "Image"
+        },
+        {
+          "name": "Observatorio_v2.json",
+          "path": "Observatorio_v2.json",
           "type": "CustomTheme"
         }
       ]
@@ -83,7 +93,6 @@
     "defaultDrillFilterOtherVisuals": true,
     "allowChangeFilterTypes": true,
     "useEnhancedTooltips": true,
-    "useDefaultAggregateDisplayName": true,
-    "pauseQueries": true
+    "useDefaultAggregateDisplayName": true
   }
 }
