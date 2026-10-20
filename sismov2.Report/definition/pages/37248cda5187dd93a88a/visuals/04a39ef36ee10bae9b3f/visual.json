@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "04a39ef36ee10bae9b3f",
+  "position": {
+    "x": 1580,
+    "y": 50,
+    "z": 3000,
+    "height": 110,
+    "width": 212.5,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_eventos_pais"
+                    }
+                  },
+                  "Property": "% Colombia"
+                }
+              },
+              "queryRef": "observatorio v_eventos_pais.% Colombia",
+              "nativeQueryRef": "% Colombia",
+              "format": "#,0.0%;-#,0.0%;#,0.0%"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "observatorio v_eventos_pais"
+                  }
+                },
+                "Property": "% Colombia"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

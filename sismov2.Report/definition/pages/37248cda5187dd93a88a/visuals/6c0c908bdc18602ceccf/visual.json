@@ -1,0 +1,72 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "6c0c908bdc18602ceccf",
+  "position": {
+    "x": 877.5,
+    "y": 250,
+    "z": 2000,
+    "height": 110,
+    "width": 197.5,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_eventos_pais"
+                    }
+                  },
+                  "Property": "Magnitud máxima"
+                }
+              },
+              "queryRef": "observatorio v_eventos_pais.Magnitud máxima",
+              "nativeQueryRef": "Magnitud máxima",
+              "format": "G"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "observatorio v_eventos_pais"
+                  }
+                },
+                "Property": "Magnitud máxima"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "fillCustom": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

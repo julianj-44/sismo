@@ -15,3 +15,17 @@ campo lugar; Colombia es el país de referencia y se resalta en los
 gráficos. Las comparaciones entre países usan magnitud de 4.5 o más,
 porque el catálogo registra de forma desigual los sismos pequeños entre
 regiones.
+
+PÁGINAS DEL INFORME (contenido mínimo)
+
+Página 1. Panorama
+  Conteo de eventos, magnitud máxima, último evento, mapa o alternativa
+  geográfica y filtros por período, magnitud y profundidad.
+
+Página 2. Análisis
+  Evolución temporal, distribución de magnitud y profundidad,
+  comparación argumentada de subconjuntos y tres hallazgos.
+
+Página 3. Calidad y actualidad
+  Faltantes, última carga exitosa, evento más reciente, estado de cargas
+  y limitaciones.

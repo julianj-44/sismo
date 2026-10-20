@@ -1,0 +1,93 @@
+table 'observatorio v_cargas'
+	lineageTag: 8813885a-ed1c-462f-b783-23a779b05fc4
+
+	measure 'Última carga exitosa UTC' = CALCULATE(MAX('observatorio v_cargas'[fin_utc]), 'observatorio v_cargas'[estado] = "ok")
+		formatString: General Date
+		lineageTag: 9796c1f3-4768-4aa4-9fcf-cef0c1daaf98
+
+	column id
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: c47a5494-a444-444f-a802-f97d47035218
+		summarizeBy: sum
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column inicio_utc
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: ecd914c6-a002-4b42-a2e5-fe1b54bf9e20
+		summarizeBy: none
+		sourceColumn: inicio_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column fin_utc
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: 19ab326c-c7e2-4cab-95e5-83d298d9dc55
+		summarizeBy: none
+		sourceColumn: fin_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column origen
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 22d9fda7-f3e5-4b37-8230-84ab519db176
+		summarizeBy: none
+		sourceColumn: origen
+
+		annotation SummarizationSetBy = Automatic
+
+	column estado
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 88749081-6a3b-41e8-8de2-75dc3d060b79
+		summarizeBy: none
+		sourceColumn: estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column procesados
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: a7238657-c53d-46d0-bca3-3a43de108325
+		summarizeBy: sum
+		sourceColumn: procesados
+
+		annotation SummarizationSetBy = Automatic
+
+	column afectados
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 59afe3b4-5b24-45f9-b2f0-659eafdba2df
+		summarizeBy: sum
+		sourceColumn: afectados
+
+		annotation SummarizationSetBy = Automatic
+
+	column mensaje
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 9d163826-2b99-43a1-bf2d-69ddebbb27ad
+		summarizeBy: none
+		sourceColumn: mensaje
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'observatorio v_cargas' = m
+		mode: directQuery
+		source =
+				let
+				    Origen = PostgreSQL.Database("localhost:5432", "observatorio_sismico"),
+				    observatorio_v_cargas = Origen{[Schema="observatorio",Item="v_cargas"]}[Data]
+				in
+				    observatorio_v_cargas
+

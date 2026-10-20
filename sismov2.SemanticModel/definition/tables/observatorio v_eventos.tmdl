@@ -1,0 +1,134 @@
+table 'observatorio v_eventos'
+	lineageTag: fb5c3954-2a1d-4643-8afd-045550a1aa9e
+
+	column id
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: fcc72bdc-09ca-4a24-8cc6-748880ec493c
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_evento_utc
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: ad63e908-ae8f-4aca-a481-88f9751a7353
+		summarizeBy: none
+		sourceColumn: fecha_evento_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column actualizado_fuente_utc
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: 190cd6f2-46f7-4504-86fb-fcb04c8a4e4b
+		summarizeBy: none
+		sourceColumn: actualizado_fuente_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_carga_utc
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: f6a45ad8-8762-47e2-bae6-20bf56174bea
+		summarizeBy: none
+		sourceColumn: fecha_carga_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column dia_utc
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: 0cd70f0c-5bc5-4453-a10c-a6a930616868
+		summarizeBy: none
+		sourceColumn: dia_utc
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column lugar
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 3a02f415-c797-4db6-b0de-c3a4c5bb7b97
+		summarizeBy: none
+		sourceColumn: lugar
+
+		annotation SummarizationSetBy = Automatic
+
+	column magnitud
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 87fe47e6-fbed-4ef7-8122-d55ce07e4399
+		summarizeBy: sum
+		sourceColumn: magnitud
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column tipo_magnitud
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: bc1b4868-53de-46cf-ae6d-0e87698386e6
+		summarizeBy: none
+		sourceColumn: tipo_magnitud
+
+		annotation SummarizationSetBy = Automatic
+
+	column longitud
+		dataType: double
+		sourceProviderType: double
+		lineageTag: b963a6cf-33bd-4e73-99cf-e655883040fe
+		summarizeBy: sum
+		sourceColumn: longitud
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column latitud
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 82241317-4b6c-41a1-90f2-340e291abce0
+		summarizeBy: sum
+		sourceColumn: latitud
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column profundidad_km
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 27b9f26f-35e4-4458-8d3b-d11fb4be726a
+		summarizeBy: sum
+		sourceColumn: profundidad_km
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column url
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 82f0825e-d0f0-41e0-a68e-ec77738f1b9d
+		summarizeBy: none
+		sourceColumn: url
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'observatorio v_eventos' = m
+		mode: directQuery
+		source =
+				let
+				    Origen = PostgreSQL.Database("localhost:5432", "observatorio_sismico"),
+				    observatorio_v_eventos = Origen{[Schema="observatorio",Item="v_eventos"]}[Data]
+				in
+				    observatorio_v_eventos
+

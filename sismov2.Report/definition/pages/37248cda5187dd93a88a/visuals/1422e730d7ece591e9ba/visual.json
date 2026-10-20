@@ -1,0 +1,134 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "1422e730d7ece591e9ba",
+  "position": {
+    "x": 473.32439110483585,
+    "y": 458.68549241087186,
+    "z": 4003,
+    "height": 487.96328979879985,
+    "width": 795.38016237204374,
+    "tabOrder": 4003
+  },
+  "visual": {
+    "visualType": "scriptVisual",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_eventos_pais"
+                    }
+                  },
+                  "Property": "latitud"
+                }
+              },
+              "queryRef": "Sum(observatorio v_eventos_pais.latitud)",
+              "nativeQueryRef": "latitud"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_eventos_pais"
+                    }
+                  },
+                  "Property": "longitud"
+                }
+              },
+              "queryRef": "Sum(observatorio v_eventos_pais.longitud)",
+              "nativeQueryRef": "longitud"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_eventos_pais"
+                    }
+                  },
+                  "Property": "magnitud"
+                }
+              },
+              "queryRef": "Sum(observatorio v_eventos_pais.magnitud)",
+              "nativeQueryRef": "magnitud"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_eventos_pais"
+                    }
+                  },
+                  "Property": "grupo"
+                }
+              },
+              "queryRef": "observatorio v_eventos_pais.grupo",
+              "nativeQueryRef": "grupo1"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "observatorio v_eventos_pais"
+                    }
+                  },
+                  "Property": "lugar"
+                }
+              },
+              "queryRef": "observatorio v_eventos_pais.lugar",
+              "nativeQueryRef": "lugar"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "observatorio v_eventos_pais"
+                  }
+                },
+                "Property": "latitud"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "script": [
+        {
+          "properties": {
+            "source": {
+              "expr": {
+                "Literal": {
+                  "Value": "'# El código siguiente, que crea un dataframe y quita las filas duplicadas, siempre se ejecuta y actúa como un preámbulo del script: \n\n# dataset <- data.frame(latitud, longitud, magnitud, grupo, lugar)\n# dataset <- unique(dataset)\n\n# Pegue o escriba aquí el código de script:\n\n# Visual de R de Power BI: mapa de sismos de Latinoamérica (ggplot2, imagen estática)\n# Campos en Valores (todos con \"No resumir\"): latitud, longitud, grupo, magnitud\n# Paquetes: install.packages(c(\"ggplot2\", \"maps\"))\n# Para la versión interactiva (plotly) ver mapa_latam_plotly.txt: no se muestra dentro de Power BI.\n\n# dataset <- data.frame(latitud, longitud)\n# dataset <- unique(dataset)\n\n# Pegue o escriba aquí el código de script:\n\n\nlibrary(ggplot2)\nlibrary(maps)\n\n# Solo Latinoamérica y sin magnitud faltante (no se reemplaza por 0: se omite del mapa)\ndataset <- dataset[dataset$grupo != \"Resto del mundo\" & !is.na(dataset$magnitud), ]\n\n# Colombia se dibuja al final para que quede encima\ndataset$grupo <- factor(dataset$grupo, levels = c(\"Resto de Latinoamérica\", \"Colombia\"))\ndataset <- dataset[order(dataset$grupo), ]\n\n# Silueta de la región: solo los países de paises_latam con incluir = TRUE\npaises <- c(\"Mexico\", \"Guatemala\", \"Belize\", \"Honduras\", \"El Salvador\", \"Nicaragua\",\n            \"Costa Rica\", \"Panama\", \"Colombia\", \"Venezuela\", \"Guyana\", \"Suriname\",\n            \"Ecuador\", \"Peru\", \"Brazil\", \"Bolivia\", \"Paraguay\", \"Chile\", \"Argentina\",\n            \"Uruguay\", \"Cuba\", \"Haiti\", \"Dominica\", \"Jamaica\", \"Bahamas\", \"Trinidad\",\n            \"Tobago\", \"Barbados\", \"Saint Lucia\", \"Grenada\", \"Saint Vincent\", \"Grenadines\",\n            \"Antigua\", \"Barbuda\", \"Saint Kitts\", \"Nevis\")\nregion   <- map_data(\"world\", region = paises)\ncolombia <- region[region$region == \"Colombia\", ]\n\n# Nota: linewidth necesita ggplot2 3.4 o superior; en versiones anteriores usar size.\n# Tamaño de los puntos: range = c(mínimo, máximo); más finos = bajar el segundo valor (ej. c(0.8, 4)).\nggplot() +\n  geom_polygon(data = region,   aes(long, lat, group = group),\n               fill = \"#E2E8F0\", colour = \"white\", linewidth = 0.3) +\n  geom_polygon(data = colombia, aes(long, lat, group = group),\n               fill = \"#FED7AA\", colour = \"white\", linewidth = 0.3) +\n  geom_point(data = dataset,\n             aes(x = longitud, y = latitud, fill = grupo, size = magnitud),\n             shape = 21, colour = \"white\", stroke = 0.3, alpha = 0.8) +\n  annotate(\"text\", x = -69.5, y = 2, label = \"COLOMBIA\",\n           colour = \"#C2410C\", size = 3.2, fontface = \"bold\") +\n  scale_fill_manual(values = c(\"Resto de Latinoamérica\" = \"#3B82F6\", \"Colombia\" = \"#F97316\"),\n                    name = NULL,\n                    guide = guide_legend(order = 1, nrow = 1, override.aes = list(size = 3))) +\n  scale_size_continuous(range = c(0.8, 5.5), breaks = c(4, 5, 6, 7), name = \"Magnitud\",\n                        guide = guide_legend(order = 2, nrow = 1, title.position = \"left\",\n                                             override.aes = list(fill = \"#94A3B8\", colour = \"white\"))) +\n  coord_quickmap(xlim = c(-118, -32), ylim = c(-57, 36), expand = FALSE) +\n  theme_void() +\n  theme(legend.position = \"bottom\", legend.box = \"horizontal\",\n        legend.spacing.x = unit(22, \"pt\"), legend.margin = margin(t = 6, b = 6),\n        legend.text  = element_text(colour = \"#475569\", size = 9),\n        legend.title = element_text(colour = \"#475569\", size = 9, vjust = 0.5),\n        plot.background = element_rect(fill = \"white\", colour = NA))\n\n'"
+                }
+              }
+            },
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'R'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

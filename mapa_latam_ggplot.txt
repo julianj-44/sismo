@@ -1,0 +1,56 @@
+# Visual de R de Power BI: mapa de sismos de Latinoamérica (ggplot2, imagen estática)
+# Campos en Valores (todos con "No resumir"): latitud, longitud, grupo, magnitud
+# Paquetes: install.packages(c("ggplot2", "maps"))
+# Para la versión interactiva (plotly) ver mapa_latam_plotly.txt: no se muestra dentro de Power BI.
+
+# dataset <- data.frame(latitud, longitud)
+# dataset <- unique(dataset)
+
+# Pegue o escriba aquí el código de script:
+
+
+library(ggplot2)
+library(maps)
+
+# Solo Latinoamérica y sin magnitud faltante (no se reemplaza por 0: se omite del mapa)
+dataset <- dataset[dataset$grupo != "Resto del mundo" & !is.na(dataset$magnitud), ]
+
+# Colombia se dibuja al final para que quede encima
+dataset$grupo <- factor(dataset$grupo, levels = c("Resto de Latinoamérica", "Colombia"))
+dataset <- dataset[order(dataset$grupo), ]
+
+# Silueta de la región: solo los países de paises_latam con incluir = TRUE
+paises <- c("Mexico", "Guatemala", "Belize", "Honduras", "El Salvador", "Nicaragua",
+            "Costa Rica", "Panama", "Colombia", "Venezuela", "Guyana", "Suriname",
+            "Ecuador", "Peru", "Brazil", "Bolivia", "Paraguay", "Chile", "Argentina",
+            "Uruguay", "Cuba", "Haiti", "Dominica", "Jamaica", "Bahamas", "Trinidad",
+            "Tobago", "Barbados", "Saint Lucia", "Grenada", "Saint Vincent", "Grenadines",
+            "Antigua", "Barbuda", "Saint Kitts", "Nevis")
+region   <- map_data("world", region = paises)
+colombia <- region[region$region == "Colombia", ]
+
+# Nota: linewidth necesita ggplot2 3.4 o superior; en versiones anteriores usar size.
+# Tamaño de los puntos: range = c(mínimo, máximo); más finos = bajar el segundo valor (ej. c(0.8, 4)).
+ggplot() +
+  geom_polygon(data = region,   aes(long, lat, group = group),
+               fill = "#E2E8F0", colour = "white", linewidth = 0.3) +
+  geom_polygon(data = colombia, aes(long, lat, group = group),
+               fill = "#FED7AA", colour = "white", linewidth = 0.3) +
+  geom_point(data = dataset,
+             aes(x = longitud, y = latitud, fill = grupo, size = magnitud),
+             shape = 21, colour = "white", stroke = 0.3, alpha = 0.8) +
+  annotate("text", x = -69.5, y = 2, label = "COLOMBIA",
+           colour = "#C2410C", size = 3.2, fontface = "bold") +
+  scale_fill_manual(values = c("Resto de Latinoamérica" = "#3B82F6", "Colombia" = "#F97316"),
+                    name = NULL,
+                    guide = guide_legend(order = 1, nrow = 1, override.aes = list(size = 3))) +
+  scale_size_continuous(range = c(0.8, 5.5), breaks = c(4, 5, 6, 7), name = "Magnitud",
+                        guide = guide_legend(order = 2, nrow = 1, title.position = "left",
+                                             override.aes = list(fill = "#94A3B8", colour = "white"))) +
+  coord_quickmap(xlim = c(-118, -32), ylim = c(-57, 36), expand = FALSE) +
+  theme_void() +
+  theme(legend.position = "bottom", legend.box = "horizontal",
+        legend.spacing.x = unit(22, "pt"), legend.margin = margin(t = 6, b = 6),
+        legend.text  = element_text(colour = "#475569", size = 9),
+        legend.title = element_text(colour = "#475569", size = 9, vjust = 0.5),
+        plot.background = element_rect(fill = "white", colour = NA))

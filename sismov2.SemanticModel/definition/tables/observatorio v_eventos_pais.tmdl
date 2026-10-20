@@ -1,0 +1,184 @@
+table 'observatorio v_eventos_pais'
+	lineageTag: e4e22d02-8c8e-49a0-9f09-20c423a345f8
+
+	measure Eventos = DISTINCTCOUNT( 'observatorio v_eventos_pais'[id])
+		formatString: 0
+		lineageTag: 01090d84-2690-42d3-9936-6eb6cdfc61d4
+
+	measure 'Magnitud máxima' = MAX( 'observatorio v_eventos_pais'[magnitud])
+		lineageTag: e52038d5-038f-40fc-b810-60deec259887
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Eventos Colombia' = CALCULATE([Eventos], 'observatorio v_eventos_pais'[grupo] = "Colombia")
+		formatString: 0
+		lineageTag: 44db2cea-0508-4875-a74f-8ed330ec6e6a
+
+	measure '% Colombia' = DIVIDE([Eventos Colombia], [Eventos])
+		lineageTag: 9cd37b8a-96bd-4d0f-b465-2b87fc1a1b79
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Magnitud máx. Colombia' = CALCULATE([Magnitud máxima], 'observatorio v_eventos_pais'[grupo] = "Colombia")
+		lineageTag: bba7a0ce-dad3-4e47-b14b-bace4f9820d8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column id
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 8da61cc3-1c80-40a5-8c23-69d798c1637c
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_evento
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: c89de05b-1962-4a5e-b927-90c1b5fb3d2e
+		summarizeBy: none
+		sourceColumn: fecha_evento
+
+		annotation SummarizationSetBy = Automatic
+
+	column actualizado_fuente
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: ee841ad6-0b4c-4499-bb65-9a0211c1f278
+		summarizeBy: none
+		sourceColumn: actualizado_fuente
+
+		annotation SummarizationSetBy = Automatic
+
+	column lugar
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 141de76e-4242-439f-8118-ba0e10aff2d0
+		summarizeBy: none
+		sourceColumn: lugar
+
+		annotation SummarizationSetBy = Automatic
+
+	column magnitud
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 34f2d885-cdcd-4737-b815-220c6d562c15
+		summarizeBy: sum
+		sourceColumn: magnitud
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column tipo_magnitud
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: de79ab19-609f-4217-9bf8-abbe077b7af0
+		summarizeBy: none
+		sourceColumn: tipo_magnitud
+
+		annotation SummarizationSetBy = Automatic
+
+	column longitud
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 0d8f2974-d1fb-4dad-a657-65f25f61287e
+		summarizeBy: sum
+		sourceColumn: longitud
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column latitud
+		dataType: double
+		sourceProviderType: double
+		lineageTag: fb149f2b-2e99-4adf-bdb3-1b6bb8b933ef
+		summarizeBy: sum
+		sourceColumn: latitud
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column profundidad_km
+		dataType: double
+		sourceProviderType: double
+		lineageTag: 8b1b7548-1721-4e7c-8f2c-0a745e0411cc
+		summarizeBy: sum
+		sourceColumn: profundidad_km
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column url
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 97701e92-0eb6-433f-9033-96e65646c0e0
+		summarizeBy: none
+		sourceColumn: url
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_carga
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: bbbe31f5-dbfe-47f8-98d6-44dff9c571e0
+		summarizeBy: none
+		sourceColumn: fecha_carga
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_dia
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: ea30d4a6-644e-492a-bb30-9fe85a403f87
+		summarizeBy: none
+		sourceColumn: fecha_dia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column pais
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: f954986f-7b10-4a1c-af0c-ab813d28f784
+		summarizeBy: none
+		sourceColumn: pais
+
+		annotation SummarizationSetBy = Automatic
+
+	column subregion
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 11c64ebd-5317-4508-87f6-0fc2ca2dc129
+		summarizeBy: none
+		sourceColumn: subregion
+
+		annotation SummarizationSetBy = Automatic
+
+	column grupo
+		dataType: string
+		sourceProviderType: nvarchar(max)
+		lineageTag: 7c075ce1-7705-4224-9828-8153a0d631d5
+		summarizeBy: none
+		sourceColumn: grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'observatorio v_eventos_pais' = m
+		mode: directQuery
+		source =
+				let
+				    Origen = PostgreSQL.Database("localhost:5432", "observatorio_sismico"),
+				    observatorio_v_eventos_pais = Origen{[Schema="observatorio",Item="v_eventos_pais"]}[Data]
+				in
+				    observatorio_v_eventos_pais
+

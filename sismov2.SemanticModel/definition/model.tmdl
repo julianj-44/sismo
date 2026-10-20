@@ -1,0 +1,21 @@
+model Model
+	culture: es-ES
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-MX
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["observatorio v_cargas","observatorio v_eventos","observatorio v_eventos_pais"]
+
+annotation PBI_ProTooling = ["DaxQueryView_Desktop","DevMode"]
+
+ref table 'observatorio v_cargas'
+ref table 'observatorio v_eventos'
+ref table 'observatorio v_eventos_pais'
+
+ref cultureInfo es-ES
+
