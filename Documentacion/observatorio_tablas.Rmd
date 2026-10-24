@@ -1,0 +1,398 @@
+---
+title: "Observatorio sísmico: tablas del esquema `observatorio`"
+author: "Julian santiago"
+date: "2026-10-24"
+output: html_document
+---
+
+Resumen de lo revisado en la base de datos. Los bloques SQL están
+solo como referencia (`eval=FALSE`): no se ejecutan al tejer el documento.
+
+## 1. Estructura de las tablas
+
+El esquema `observatorio` tiene 3 tablas. Consulta usada (catálogo `pg_catalog`,
+porque `information_schema` no mostraba nada sin permisos de lectura):
+
+```{sql, eval=FALSE}
+-- Lista las columnas de las 3 tablas leyendo el catálogo interno de PostgreSQL
+SELECT c.relname AS tabla, a.attnum AS pos, a.attname AS columna,
+       format_type(a.atttypid, a.atttypmod) AS tipo
+FROM pg_attribute a                                    -- una fila por cada columna
+JOIN pg_class c ON c.oid = a.attrelid                  -- a qué tabla pertenece
+JOIN pg_namespace n ON n.oid = c.relnamespace          -- a qué esquema pertenece
+WHERE n.nspname = 'observatorio'                       -- solo el esquema observatorio
+  AND c.relname IN ('cargas','eventos','paises_latam') -- solo estas tablas
+  AND a.attnum > 0 AND NOT a.attisdropped              -- sin columnas de sistema ni borradas
+ORDER BY c.relname, a.attnum;                          -- ordenadas por tabla y posición
+```
+
+<details>
+<summary>¿Qué significan <code>attnum</code>, <code>attname</code> y las demás?</summary>
+
+PostgreSQL guarda la descripción de todas sus tablas en tablas internas
+(el *catálogo*). Los nombres empiezan con `pg_` y sus columnas con `att`
+(de *attribute*, "atributo" = columna).
+
+| Elemento | Qué es |
+|---|---|
+| `pg_attribute` (alias `a`) | Tabla interna con una fila por cada columna de cada tabla |
+| `pg_class` (alias `c`) | Tabla interna con una fila por cada tabla, vista o índice |
+| `pg_namespace` (alias `n`) | Tabla interna con los esquemas (`observatorio`, `public`...) |
+| `attname` | Nombre de la columna (`id`, `lugar`...) |
+| `attnum` | Posición de la columna: 1, 2, 3... Los valores `<= 0` son columnas ocultas del sistema |
+| `attisdropped` | `true` si la columna fue borrada; se descarta |
+| `atttypid`, `atttypmod` | Código del tipo y su tamaño; `format_type()` los convierte a texto legible (`text`, `bigint`...) |
+| `relname` | Nombre de la tabla (*relation name*) |
+| `nspname` | Nombre del esquema (*namespace name*) |
+| `oid` | Identificador interno de cada objeto; sirve para unir las tablas del catálogo |
+
+Los `JOIN` conectan columna → tabla → esquema usando esos identificadores.
+
+</details>
+
+### `cargas`
+
+Registro de cada carga de datos: cuándo corrió, de dónde vino, cuántos
+registros procesó y si terminó bien.
+
+| Columna    | Tipo        |
+|------------|-------------|
+| id         | bigint      |
+| inicio     | timestamptz |
+| fin        | timestamptz |
+| origen     | text        |
+| estado     | text        |
+| procesados | integer     |
+| afectados  | integer     |
+| mensaje    | text        |
+
+### `eventos`
+
+Los sismos: fecha, lugar, magnitud, coordenadas y profundidad, tal como los
+entrega el USGS.
+
+| Columna            | Tipo             |
+|--------------------|------------------|
+| id                 | text             |
+| fecha_evento       | timestamptz      |
+| actualizado_fuente | timestamptz      |
+| lugar              | text             |
+| magnitud           | double precision |
+| tipo_magnitud      | text             |
+| longitud           | double precision |
+| latitud            | double precision |
+| profundidad_km     | double precision |
+| url                | text             |
+| fecha_carga        | timestamptz      |
+
+### `paises_latam`
+
+Catálogo de países de Latinoamérica. Relaciona el nombre que usa el USGS al
+final de `eventos.lugar` con el país en español y su subregión. `incluir`
+indica si el país entra en el análisis (Puerto Rico y Guayana Francesa no).
+
+| Columna     | Tipo    |
+|-------------|---------|
+| nombre_usgs | text    |
+| pais        | text    |
+| subregion   | text    |
+| incluir     | boolean |
+
+## 2. Filas por tabla
+
+Cuántos registros tiene cada tabla.
+
+```{sql, eval=FALSE}
+-- count(*) cuenta las filas de cada tabla; UNION ALL pega los 3 resultados en uno
+SELECT 'cargas' AS tabla, count(*) AS filas FROM observatorio.cargas
+UNION ALL SELECT 'eventos', count(*) FROM observatorio.eventos
+UNION ALL SELECT 'paises_latam', count(*) FROM observatorio.paises_latam;
+```
+
+| Tabla        | Filas |
+|--------------|-------|
+| cargas       | 2     |
+| eventos      | 10.514 |
+| paises_latam | 36    |
+
+## 3. Contenido de `cargas`
+
+Dos cargas registradas, ambas con el feed mensual del USGS, de unos 30
+segundos y sin errores. `afectados` cuenta los eventos insertados o revisados:
+la segunda carga procesó 9.719 eventos, pero solo 1.044 eran nuevos o habían
+sido revisados por el USGS; el resto ya estaba en `eventos`.
+
+```{sql, eval=FALSE}
+-- Muestra todas las columnas (*) y todas las filas de la tabla cargas
+SELECT * FROM observatorio.cargas;
+```
+
+| Campo      | Carga 1                                                                     | Carga 2                                                                     |
+|------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| id         | 1                                                                           | 2                                                                           |
+| inicio     | 2026-10-18 18:25:26 UTC                                                     | 2026-10-20 16:43:10 UTC                                                     |
+| fin        | 2026-10-18 18:25:58 UTC                                                     | 2026-10-20 16:43:40 UTC                                                     |
+| origen     | https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson | https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson |
+| estado     | ok                                                                          | ok                                                                          |
+| procesados | 9.729                                                                       | 9.719                                                                       |
+| afectados  | 9.729                                                                       | 1.044                                                                       |
+| mensaje    | null                                                                        | null                                                                        |
+
+## 4. Rango de fechas de `eventos`
+
+Periodo que cubren los sismos cargados: unos 32 días, porque la base acumula las
+dos cargas del feed `all_month` (ventana móvil de 30 días).
+
+```{sql, eval=FALSE}
+-- Fecha más antigua (min), más reciente (max) y número de sismos
+SELECT min(fecha_evento) AS primero, max(fecha_evento) AS ultimo, count(*) AS total
+FROM observatorio.eventos;
+```
+
+| Dato         | Valor (UTC)         |
+|--------------|---------------------|
+| Primer sismo | 2026-09-18 18:33:46 |
+| Último sismo | 2026-10-20 16:38:02 |
+| Total        | 10.514              |
+
+## 5. Sismos por país
+
+Sismos de Latinoamérica en el período cargado y su magnitud máxima. Como
+`eventos` no tiene columna de país, se cruza el final de `lugar` con
+`paises_latam.nombre_usgs`. Se excluye "New Mexico" (EE. UU.) para no
+contarlo como México. Solo 292 de los 10.514 sismos son de la lista; el resto
+ocurrió en otras regiones (Alaska, California, Asia, Oceanía, etc.).
+
+```{sql, eval=FALSE}
+-- Cuenta los sismos de cada país latinoamericano y su magnitud máxima
+SELECT p.pais, p.subregion, count(*) AS sismos, round(max(e.magnitud)::numeric, 1) AS mag_max
+FROM observatorio.eventos e                  -- los sismos
+JOIN observatorio.paises_latam p             -- el catálogo de países
+  ON e.lugar ILIKE '%' || p.nombre_usgs      -- une si lugar TERMINA en el nombre del país
+WHERE p.incluir                              -- solo países marcados para incluir
+  AND e.lugar NOT ILIKE '%New Mexico'        -- evita contar Nuevo México (EE. UU.) como México
+GROUP BY p.pais, p.subregion                 -- una fila por país
+ORDER BY sismos DESC;                        -- de más a menos sismos
+```
+
+<details>
+<summary>¿Cómo funciona el cruce por <code>ILIKE '%' || nombre_usgs</code>?</summary>
+
+- `eventos` no tiene columna de país; el país viene escrito al final de `lugar`,
+  por ejemplo `"10 km NE of Pasto, Colombia"`.
+- `ILIKE` compara texto sin distinguir mayúsculas de minúsculas.
+- `%` significa "cualquier texto". `'%' || 'Colombia'` forma el patrón
+  `%Colombia`, es decir, "cualquier cosa que termine en Colombia".
+- Por eso México tiene dos filas en `paises_latam` (`Mexico` y `MX`): el USGS
+  escribe ambas formas. Al agrupar por `p.pais` se suman en un solo país.
+- `"New Mexico"` termina en `Mexico`, por eso se excluye aparte.
+- `count(*)` cuenta sismos; `max(e.magnitud)` toma la mayor magnitud;
+  `round(..., 1)` la deja con un decimal. `::numeric` convierte el número para
+  poder redondearlo.
+- `GROUP BY` junta todas las filas de un mismo país antes de contar.
+
+</details>
+
+| País                   | Subregión       | Sismos | Mag. máx. |
+|------------------------|-----------------|--------|-----------|
+| Panamá                 | América Central | 100    | 7.7       |
+| México                 | América Central | 40     | 5.2       |
+| Colombia               | América del Sur | 36     | 4.8       |
+| Chile                  | América del Sur | 36     | 5.2       |
+| Rep. Dominicana        | Caribe          | 29     | 4.8       |
+| Argentina              | América del Sur | 11     | 5.3       |
+| Perú                   | América del Sur | 8      | 5.2       |
+| Ecuador                | América del Sur | 7      | 5.4       |
+| Guatemala              | América Central | 7      | 4.6       |
+| Nicaragua              | América Central | 6      | 4.9       |
+| El Salvador            | América Central | 5      | 4.5       |
+| Bolivia                | América del Sur | 3      | 4.6       |
+| Costa Rica             | América Central | 2      | 5.6       |
+| Venezuela              | América del Sur | 1      | 5.0       |
+| San Cristóbal y Nieves | Caribe          | 1      | 4.7       |
+
+**Casos que el cruce no cuenta:** Puerto Rico (273) y las Islas Vírgenes de
+EE. UU. (25), que son territorios de EE. UU.; Martinica (1) y Anguila (1),
+dependencias del Caribe.
+
+## 6. Consultas propias del grupo
+
+Las seis consultas analíticas del grupo están en `sql/consultas_propias.sql`
+y leen las mismas vistas que Power BI (`v_eventos_pais`, `v_cargas`). Se
+ejecutaron el 24 de octubre de 2026 sobre `observatorio_sismico`, sin filtros.
+Como las anteriores, aquí solo se muestran como referencia (`eval=FALSE`).
+
+### 6.1 Sismos y magnitud máxima por país
+
+Numerador: eventos del país; unidad: eventos y magnitud; período: todo lo
+cargado. `max()` ignora las magnitudes vacías: no se reemplazan por 0. El
+resultado es el mismo de la sección 5 (292 eventos en 15 países), ahora leído
+desde la vista `v_eventos_pais`.
+
+```{sql, eval=FALSE}
+SELECT pais, subregion,
+       count(*)       AS eventos,
+       max(magnitud)  AS magnitud_maxima
+FROM observatorio.v_eventos_pais
+WHERE grupo <> 'Resto del mundo'
+GROUP BY pais, subregion
+ORDER BY eventos DESC;
+```
+
+| País                   | Subregión       | Eventos | Magnitud máx. |
+|------------------------|-----------------|---------|---------------|
+| Panamá                 | América Central | 100     | 7,7           |
+| México                 | América Central | 40      | 5,2           |
+| Colombia               | América del Sur | 36      | 4,8           |
+| Chile                  | América del Sur | 36      | 5,2           |
+| República Dominicana   | Caribe          | 29      | 4,8           |
+| Argentina              | América del Sur | 11      | 5,3           |
+| Perú                   | América del Sur | 8       | 5,2           |
+| Ecuador                | América del Sur | 7       | 5,4           |
+| Guatemala              | América Central | 7       | 4,6           |
+| Nicaragua              | América Central | 6       | 4,9           |
+| El Salvador            | América Central | 5       | 4,5           |
+| Bolivia                | América del Sur | 3       | 4,6           |
+| Costa Rica             | América Central | 2       | 5,6           |
+| San Cristóbal y Nieves | Caribe          | 1       | 4,7           |
+| Venezuela              | América del Sur | 1       | 5,0           |
+
+### 6.2 Colombia frente al resto de Latinoamérica (magnitud ≥ 4,5)
+
+El catálogo registra de forma desigual los sismos pequeños según la región;
+con el mismo umbral la comparación es justa. La magnitud no es intensidad ni
+energía y mezcla tipos (`mb`, `ml`, `mww`...), así que las medianas son
+orientativas.
+
+```{sql, eval=FALSE}
+SELECT grupo,
+       count(*) AS eventos,
+       round(percentile_cont(0.5) WITHIN GROUP (ORDER BY magnitud)::numeric, 2)       AS mediana_magnitud,
+       max(magnitud) AS magnitud_maxima,
+       round(percentile_cont(0.5) WITHIN GROUP (ORDER BY profundidad_km)::numeric, 1) AS mediana_profundidad_km
+FROM observatorio.v_eventos_pais
+WHERE grupo IN ('Colombia', 'Resto de Latinoamérica') AND magnitud >= 4.5
+GROUP BY grupo ORDER BY grupo;
+```
+
+| Grupo                  | Eventos | Mediana magnitud | Magnitud máx. | Mediana profundidad (km) |
+|------------------------|---------|------------------|---------------|--------------------------|
+| Colombia               | 11      | 4,60             | 4,8           | 57,9                     |
+| Resto de Latinoamérica | 124     | 4,70             | 7,7           | 10,0                     |
+
+### 6.3 Frecuencia diaria de sismos en Colombia (día UTC)
+
+Solo aparecen los días con al menos un evento: 19 días con 36 eventos en total
+(promedio de 1,89 eventos por día con actividad; día pico, 23 sep con 5).
+
+```{sql, eval=FALSE}
+SELECT fecha_dia, count(*) AS eventos, max(magnitud) AS magnitud_maxima
+FROM observatorio.v_eventos_pais
+WHERE grupo = 'Colombia'
+GROUP BY fecha_dia ORDER BY fecha_dia;
+```
+
+| Día (UTC)   | Eventos | Mag. máx. |  | Día (UTC)   | Eventos | Mag. máx. |
+|-------------|---------|-----------|--|-------------|---------|-----------|
+| 2026-09-18  | 2       | 4,5       |  | 2026-09-28  | 2       | 4,3       |
+| 2026-09-19  | 4       | 4,8       |  | 2026-09-29  | 1       | 4,4       |
+| 2026-09-21  | 4       | 4,5       |  | 2026-09-30  | 1       | 4,2       |
+| 2026-09-22  | 2       | 4,6       |  | 2026-10-05  | 1       | 4,1       |
+| 2026-09-23  | 5       | 4,6       |  | 2026-10-06  | 1       | 4,1       |
+| 2026-09-24  | 2       | 4,6       |  | 2026-10-07  | 1       | 4,4       |
+| 2026-09-25  | 3       | 4,6       |  | 2026-10-10  | 1       | 4,5       |
+| 2026-09-26  | 1       | 4,2       |  | 2026-10-13  | 2       | 4,8       |
+| 2026-09-27  | 1       | 4,6       |  | 2026-10-16  | 1       | 4,5       |
+|             |         |           |  | 2026-10-17  | 1       | 4,4       |
+
+### 6.4 Perfil de profundidad por grupo
+
+Numerador: eventos del tramo. Denominador: eventos del mismo grupo con
+profundidad conocida. Unidad: porcentaje. Las profundidades negativas son
+válidas y entran en «Menos de 10 km».
+
+```{sql, eval=FALSE}
+SELECT grupo, tramo_profundidad,
+       count(*) AS eventos,
+       round(100.0 * count(*) / sum(count(*)) OVER (PARTITION BY grupo), 1) AS porcentaje_del_grupo
+FROM observatorio.v_eventos_pais
+WHERE grupo IN ('Colombia', 'Resto de Latinoamérica') AND tramo_profundidad IS NOT NULL
+GROUP BY grupo, tramo_profundidad, orden_tramo
+ORDER BY grupo, orden_tramo;
+```
+
+| Tramo          | Colombia (eventos) | Colombia (%) | Resto de Latinoamérica (eventos) | Resto (%) |
+|----------------|--------------------|--------------|----------------------------------|-----------|
+| Menos de 10 km | 1                  | 2,8          | 14                               | 5,5       |
+| 10 a 35 km     | 19                 | 52,8         | 152                              | 59,4      |
+| 35 a 70 km     | 6                  | 16,7         | 28                               | 10,9      |
+| 70 a 150 km    | 6                  | 16,7         | 40                               | 15,6      |
+| 150 a 300 km   | 4                  | 11,1         | 20                               | 7,8       |
+| Más de 300 km  | 0                  | 0,0          | 2                                | 0,8       |
+
+### 6.5 Calidad y actualidad
+
+Sirve para contrastar la página «Calidad y actualidad» del informe.
+
+```{sql, eval=FALSE}
+SELECT count(*) AS eventos, count(DISTINCT id) AS ids_unicos,
+       count(*) - count(DISTINCT id) AS ids_duplicados,
+       count(*) FILTER (WHERE magnitud IS NULL)       AS sin_magnitud,
+       count(*) FILTER (WHERE profundidad_km IS NULL) AS sin_profundidad,
+       max(fecha_evento) AS ultimo_evento_utc,
+       (SELECT max(fin_utc) FROM observatorio.v_cargas WHERE estado = 'ok') AS ultima_carga_ok_utc
+FROM observatorio.v_eventos_pais;
+```
+
+| Indicador          | Valor               |
+|--------------------|---------------------|
+| Eventos            | 10.514              |
+| Ids únicos         | 10.514              |
+| Ids duplicados     | 0                   |
+| Sin magnitud       | 0                   |
+| Sin profundidad    | 0                   |
+| Último evento UTC  | 2026-10-20 16:38:02 |
+| Última carga ok UTC| 2026-10-20 16:43:40 |
+
+### 6.6 Contraste con Power BI
+
+Calcula en SQL los indicadores del informe, sin filtros, para compararlos con
+las tarjetas de Power BI. Las fechas salen en UTC sin zona horaria: si Power BI
+las muestra 5 horas distintas, hay que revisar el formato de la medida y no la
+consulta.
+
+```{sql, eval=FALSE}
+SELECT now() AT TIME ZONE 'UTC' AS consulta_utc,
+       count(DISTINCT id) AS eventos,
+       max(magnitud) AS magnitud_maxima,
+       max(fecha_evento) AS ultimo_evento_utc,
+       count(DISTINCT id) FILTER (WHERE grupo = 'Colombia') AS eventos_colombia,
+       round(100.0 * count(DISTINCT id) FILTER (WHERE grupo = 'Colombia')
+             / count(DISTINCT id), 2) AS pct_colombia,
+       max(magnitud) FILTER (WHERE grupo = 'Colombia') AS mag_max_colombia,
+       count(DISTINCT id) FILTER (WHERE grupo <> 'Resto del mundo') AS eventos_latam,
+       count(*) - count(DISTINCT id) AS ids_duplicados,
+       count(*) FILTER (WHERE magnitud IS NULL) AS sin_magnitud,
+       count(*) FILTER (WHERE profundidad_km IS NULL) AS sin_profundidad,
+       count(*) FILTER (WHERE magnitud < 0) AS mag_negativa,
+       count(*) FILTER (WHERE profundidad_km < 0) AS prof_negativa,
+       (SELECT max(fin_utc) FROM observatorio.v_cargas WHERE estado = 'ok') AS ultima_carga_ok_utc,
+       (SELECT count(*) FROM observatorio.v_cargas WHERE estado = 'ok')  AS cargas_ok,
+       (SELECT count(*) FROM observatorio.v_cargas WHERE estado <> 'ok') AS cargas_fallidas
+FROM observatorio.v_eventos_pais;
+```
+
+| Indicador                        | Valor (SQL)          |
+|----------------------------------|----------------------|
+| Eventos                          | 10.514               |
+| Magnitud máxima                  | 7,7                  |
+| Último evento UTC                | 2026-10-20 16:38:02  |
+| Eventos Colombia                 | 36                   |
+| % Colombia                       | 0,34 %               |
+| Magnitud máx. Colombia           | 4,8                  |
+| Eventos Latinoamérica            | 292                  |
+| Ids duplicados                   | 0                    |
+| Sin magnitud / sin profundidad   | 0 / 0                |
+| Magnitud / profundidad negativa  | 479 / 219            |
+| Última carga ok UTC              | 2026-10-20 16:43:40  |
+| Cargas ok / fallidas             | 2 / 0                |

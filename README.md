@@ -42,12 +42,12 @@ Preguntas que responde el informe:
 JOSE_SANTIAGO_Observatorio/
 ├─ JOSE_SANTIAGO_Observatorio.pbix   informe de Power BI
 ├─ JOSE_SANTIAGO_Observatorio.Rproj  abrir primero en RStudio (fija la raíz)
-├─ README.md · diccionario_datos.txt
-├─ sql/          estructura, vistas, verificaciones y base demo
-├─ r/            carga desde el USGS y prueba reproducible
-├─ datos_demo/   lotes reales de la prueba y su procedencia
-├─ Evidencia/    capturas, validación contra SQL y diagramas
-└─ docs/         guía de la actividad, instalación y medidas DAX
+├─ README.md
+├─ sql/            estructura, vistas, consultas propias, verificaciones y base demo
+├─ r/              carga desde el USGS y prueba reproducible
+├─ datos_demo/     lotes reales de la prueba y su procedencia
+├─ Documentacion/  guía, instalación, medidas DAX, diccionario, esquema y diagrama del método
+└─ PlantillaBI/    fondos de las páginas del informe
 ```
 
 Todas las rutas de este documento son relativas a la raíz del proyecto.
@@ -56,7 +56,7 @@ Todas las rutas de este documento son relativas a la raíz del proyecto.
 
 | Archivo                                                                           | Para qué sirve                                                                                                           |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `docs/00_LEEME.txt`, `docs/01_Guia_Actividad.md`, `docs/02_Instalacion_y_Ejecucion.md` | Guía de la actividad e instrucciones de instalación y ejecución                                                          |
+| `Documentacion/00_LEEME.txt`, `Documentacion/01_Guia_Actividad.md`, `Documentacion/02_Instalacion_y_Ejecucion.md` | Guía de la actividad e instrucciones de instalación y ejecución                                                          |
 | `sql/03_Estructura.sql` (base)                                                        | Esquema `observatorio`, tablas `eventos` y `cargas`, vistas `v_eventos` y `v_cargas`, permisos de `pbi_lector`           |
 | `r/04_Carga_USGS.R`                                                                 | Funciones `cargar()`, `preparar_demo()` y `continuar()`                                                                  |
 | `sql/05_Verificaciones.sql`                                                           | Consultas de control: conteo, ids únicos, faltantes y cargas                                                             |
@@ -69,19 +69,22 @@ Todas las rutas de este documento son relativas a la raíz del proyecto.
 | `sql/03_Estructura.sql` (ampliación) | Se añadió la tabla `paises_latam`, el catálogo que asigna el país a cada sismo                                                                              |
 | `sql/06_Vista_eventos_pais.sql`      | **Vista propia 1:** `v_eventos_pais`, con país, grupo (Colombia / resto de Latinoamérica / resto del mundo), intervalos de magnitud y tramos de profundidad |
 | `sql/07_Vistas_paises.sql`              | **Vista propia 2:** `v_paises` y permisos de lectura                                                                                                        |
-| `sql/vistas_propias.sql`                     | Consultas propias para construir y probar la clasificación por país                                                                                         |
+| `sql/consultas_propias.sql` | **Consultas propias (Etapa 4):** sismos y magnitud máxima por país, Colombia frente al resto de Latinoamérica con M ≥ 4,5, frecuencia diaria, perfil de profundidad y control de calidad y contraste con los indicadores de Power BI; leen las mismas vistas que el informe |
+| `Documentacion/observatorio_tablas.Rmd` (y `.html`) | Documentación del esquema `observatorio`: estructura de las tablas y consultas de referencia (datos al 24 oct 2026) |
 | `r/carga.R`                        | **Orquestador de la carga en vivo:** define las variables de entorno, carga `r/04_Carga_USGS.R` y llama a `cargar()` sobre `observatorio_sismico`            |
 | `r/10_Prueba_demo.R`               | **Orquestador de la prueba reproducible:** apunta a `observatorio_demo` y ejecuta, paso a paso y con verificaciones, la carga inicial, la del lote reservado y la repetición |
 | `sql/09_Base_demo.sql`               | Permisos de `pbi_lector` y verificaciones para la base `observatorio_demo` de la prueba reproducible                                                        |
-| `Evidencia/`                     | Validación contra SQL (`validacion_sql.md`), guion de la prueba (`guion_prueba.md`) y capturas                                                              |
+| `PlantillaBI/` | Imágenes de fondo de las tres páginas del informe |
 | `JOSE_SANTIAGO_Observatorio.pbix`                   | Informe de Power BI de tres páginas                                                                                                                         |
-| `docs/Medidas_DAX.md`                 | Medidas DAX del informe                                                                                                                                     |
-| `diccionario_datos.txt`          | Diccionario de datos completo                                                                                                                               |
+| `Documentacion/Medidas_DAX.md`                 | Medidas DAX del informe                                                                                                                                     |
+| `Documentacion/diccionario_datos.txt`          | Diccionario de datos completo                                                                                                                               |
 | `README.md`                      | Este documento                                                                                                                                              |
 
 ## 5. Cómo reproducirlo
 
 No se incluye ninguna contraseña; cada equipo usa las suyas.
+
+![Flujo del método: carga en vivo y prueba con lotes guardados](Documentacion/flujo_metodoV2.png)
 
 1. Instalar PostgreSQL (servidor y pgAdmin), R, RStudio y Power BI Desktop. Anotar la contraseña de `postgres` y el puerto (normalmente 5432).
 2. En pgAdmin crear la base `observatorio_sismico`. En su Query Tool ejecutar, en orden: `sql/03_Estructura.sql`, `sql/06_Vista_eventos_pais.sql`, `sql/07_Vistas_paises.sql`.
@@ -122,32 +125,24 @@ No se incluye ninguna contraseña; cada equipo usa las suyas.
 
 ### Prueba reproducible (base `observatorio_demo`)
 
-El script de R carga datos del USGS en vivo en la base real, o los lotes guardados en la base demo. Power BI nunca lee los JSON: los lee R y los escribe en PostgreSQL, y Power BI consulta la base. Es un **único informe** (`JOSE_SANTIAGO_Observatorio.pbix`): para la demostración solo se le cambia el origen de datos a `observatorio_demo` y después se devuelve a `observatorio_sismico`.
+Comprueba que el tablero se actualiza solo y que repetir una carga no duplica eventos. Usa una captura real del USGS (descarga 18 oct 2026 00:31 UTC, ver `datos_demo/procedencia.txt`) partida en `inicial.json` y `reservado.json`. Es solo para la prueba: el informe real usa `observatorio_sismico`.
 
-![Un solo informe, dos bases](Evidencia/flujo_demo.png)
-
-Preparación:
-
-1. Con el modo continuo detenido, crear en pgAdmin la base vacía `observatorio_demo` y ejecutar allí `sql/03_Estructura.sql`, `sql/06_Vista_eventos_pais.sql`, `sql/07_Vistas_paises.sql` y `sql/09_Base_demo.sql`.
-2. En Power BI: *Transformar datos → Configuración de origen de datos → Cambiar origen* a `observatorio_demo`, y quitar los filtros que oculten los eventos del lote reservado.
-3. En RStudio, ejecutar `r/10_Prueba_demo.R` **línea por línea** (no con `source()`); cada paso trae el resultado esperado.
-
-Qué se debe observar:
+1. Con el modo continuo detenido, crear la base vacía `observatorio_demo` y ejecutar allí `sql/03_Estructura.sql`, `sql/06_Vista_eventos_pais.sql`, `sql/07_Vistas_paises.sql` y `sql/09_Base_demo.sql`.
+2. En Power BI, cambiar el origen a `observatorio_demo` (*Transformar datos → Configuración de origen de datos*) y quitar los filtros que oculten eventos.
+3. Ejecutar `r/10_Prueba_demo.R` **línea por línea** (no con `source()`):
 
 | Paso | Acción | Resultado |
 |---|---|---|
 | 1 | Base vacía | 0 eventos |
 | 2 | `cargar('datos_demo/inicial.json')` | 9.882 eventos |
-| 3 | `cargar('datos_demo/reservado.json')`; esperar el refresco de 1 minuto | 9.902 eventos, visibles en Power BI sin acción manual |
-| 4 | Repetir exactamente la carga anterior | `afectados = 0`, sigue en 9.902 y sin duplicados |
+| 3 | `cargar('datos_demo/reservado.json')` y esperar 1 minuto | 9.902 eventos, visibles sin acción manual |
+| 4 | Repetir la carga anterior | `afectados = 0`, sigue en 9.902, sin duplicados |
 
-Resultado del ensayo (24 oct 2026): las tres cargas quedaron registradas con `afectados` de 9.882, 20 y 0, y 9.902 eventos con 9.902 ids únicos. El detalle y las capturas están en `Evidencia/`.
-
-No ejecutar `cargar()` sin archivo ni `continuar()` hasta terminar la prueba. Al finalizar, devolver el origen del informe a `observatorio_sismico`. Presentarla como reproducción controlada de datos reales con fechas originales conservadas (ver `datos_demo/procedencia.txt`: descarga 18 oct 2026 00:31 UTC).
+Ensayo del 24 oct 2026: `afectados` de 9.882, 20 y 0, y 9.902 eventos con 9.902 ids únicos. Al terminar, devolver el origen a `observatorio_sismico`. No ejecutar `cargar()` sin archivo ni `continuar()` antes de acabar la prueba.
 
 ## 6. Diccionario de datos (resumen)
 
-Todas las fechas están en **UTC**. El diccionario completo está en `diccionario_datos.txt`.
+Todas las fechas están en **UTC**. El diccionario completo está en `Documentacion/diccionario_datos.txt`.
 
 | Campo | Tipo | Unidad | Faltantes / notas |
 |---|---|---|---|
@@ -162,15 +157,15 @@ Todas las fechas están en **UTC**. El diccionario completo está en `diccionari
 | `profundidad_km` | double | km | Las **negativas son válidas** (ver abajo) |
 | `url` | text | — | Enlace al evento en el USGS |
 
-Campos derivados en `v_eventos_pais`: `fecha_dia` (día UTC), `pais`, `subregion`, `grupo` (*Colombia* / *Resto de Latinoamérica* / *Resto del mundo*), `intervalo_magnitud`, `tramo_profundidad` y sus columnas de orden.
+**Campos que agrega la vista `v_eventos_pais`:** `fecha_dia` (día UTC), `pais`, `subregion`, `grupo` (*Colombia*, *Resto de Latinoamérica* o *Resto del mundo*) y los intervalos de magnitud y profundidad (`intervalo_magnitud`, `tramo_profundidad`).
 
-**Las tres fechas no son lo mismo:** fecha del evento (cuándo ocurrió), `actualizado_fuente` (cuándo lo revisó el USGS) y `fecha_carga` (cuándo llegó a nuestra base). La tabla `cargas` describe ejecuciones del script y **no se relaciona** con los eventos.
+**Ojo con las tres fechas:** `fecha_evento` es cuándo ocurrió el sismo, `actualizado_fuente` cuándo lo revisó el USGS y `fecha_carga` cuándo entró a nuestra base. La tabla `cargas` registra las ejecuciones del script y no se relaciona con los eventos.
 
-**Valores negativos.** *Magnitud negativa*: la escala es logarítmica y sin mínimo; son microsismos (479 eventos, 4,6 %; mínimo −1,29). *Profundidad negativa*: la referencia es el nivel del mar o la elevación de las estaciones, así que un epicentro en terreno elevado o volcánico da profundidad negativa (219 eventos, 2,1 %; mínimo −3,4 km; ninguno de Colombia). Se conservan, y en los tramos de profundidad entran en «Menos de 10 km». Son fenómenos distintos y no se infiere uno del otro. Fuentes: USGS FAQs sobre [magnitud negativa](https://www.usgs.gov/faqs/how-can-earthquake-have-a-negative-magnitude) y [profundidad negativa](https://www.usgs.gov/faqs/what-does-it-mean-earthquake-occurred-a-depth-0-km-how-can-earthquake-have-a-negative-depth).
+**Valores negativos (son válidos y se conservan).** Una magnitud negativa es un microsismo muy pequeño (479 eventos, 4,6 %; mínimo −1,29). Una profundidad negativa es un epicentro por encima del nivel del mar, como en zonas volcánicas o elevadas (219 eventos, 2,1 %; mínimo −3,4 km; ninguno de Colombia); en los tramos de profundidad entran en «Menos de 10 km». Fuentes del USGS: [magnitud negativa](https://www.usgs.gov/faqs/how-can-earthquake-have-a-negative-magnitude) y [profundidad negativa](https://www.usgs.gov/faqs/what-does-it-mean-earthquake-occurred-a-depth-0-km-how-can-earthquake-have-a-negative-depth).
 
 ## 7. Definición de los indicadores
 
-Período: por defecto todo el rango cargado (18 sep – 20 oct 2026 UTC). Los segmentadores de cada página permiten acotarlo, y los indicadores se recalculan con ese filtro. Las medidas están en el modelo del informe (ver `docs/Medidas_DAX.md`).
+Período: por defecto todo el rango cargado (18 sep – 20 oct 2026 UTC). Los segmentadores de cada página permiten acotarlo, y los indicadores se recalculan con ese filtro. Las medidas están en el modelo del informe (ver `Documentacion/Medidas_DAX.md`).
 
 | Indicador | Definición | Unidad | Faltantes | Decisión o tarea que apoya |
 |---|---|---|---|---|
@@ -190,13 +185,13 @@ Las comparaciones entre países usan **magnitud ≥ 4,5**: el catálogo registra
 
 ## 8. Validación: Power BI contra SQL
 
-Consultas ejecutadas sobre `observatorio.v_eventos_pais` y `observatorio.v_cargas` el 20 oct 2026, sin filtros.
+Consulta 6 de `sql/consultas_propias.sql`, ejecutada el 24 oct 2026 sobre `observatorio.v_eventos_pais` y `observatorio.v_cargas`, sin filtros.
 
 | Indicador | SQL | Power BI | ¿Coincide? |
 |---|---|---|---|
 | Eventos | 10.514 | 10.514 | Sí |
 | Magnitud máxima | 7,7 | 7,7 | Sí |
-| Último evento UTC | 20 oct 2026 21:38 | 20 oct 2026 21:38 | Sí |
+| Último evento UTC | 20 oct 2026 16:38 | por verificar en Power BI | — |
 | Eventos Colombia | 36 | 36 | Sí |
 | % Colombia | 0,34 % | 0,34 % | Sí |
 | Magnitud máx. Colombia | 4,8 | 4,8 | Sí |
@@ -204,9 +199,9 @@ Consultas ejecutadas sobre `observatorio.v_eventos_pais` y `observatorio.v_carga
 | Ids duplicados | 0 | 0 | Sí |
 | Sin magnitud / sin profundidad | 0 / 0 | 0 / 0 | Sí |
 | Magnitud / profundidad negativa | 479 / 219 | 479 / 219 | Sí |
-| Última carga ok UTC | 20 oct 2026 21:43 | 20 oct 2026 21:43 | Sí |
+| Última carga ok UTC | 20 oct 2026 16:43 | por verificar en Power BI | — |
 
-Estado de cargas: 2 ok, 2 con datos nuevos, 0 fallidas. Evidencia (capturas antes/después y resultados SQL) en la carpeta de evidencia del ZIP.
+Estado de cargas: 2 ok, 2 con datos nuevos, 0 fallidas.
 
 ## 9. Tres hallazgos
 
