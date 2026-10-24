@@ -1,17 +1,18 @@
 # Prueba reproducible (Etapa 6) sobre la base observatorio_demo.
 # Ejecutar PASO A PASO (Ctrl+Enter), no con source(): cada paso se comprueba antes del siguiente.
-# No modifica 04_Carga_USGS.R ni carga.R. No usar preparar_demo(): datos_demo/ ya existe.
+# No modifica r/04_Carga_USGS.R ni r/carga.R. No usar preparar_demo(): datos_demo/ ya existe.
+# El directorio de trabajo debe ser la raíz del proyecto (abrir el .Rproj).
 #
-# Antes de empezar, en pgAdmin y sobre observatorio_demo ya deben estar ejecutados:
-#   03_Estructura.sql, 06_Vista_eventos_pais.sql, 07_Vistas_mcp.sql y 09_Base_demo.sql
+# Antes de empezar, en pgAdmin y sobre observatorio_demo ya deben estar ejecutados (carpeta sql/):
+#   03_Estructura.sql, 06_Vista_eventos_pais.sql, 07_Vistas_paises.sql y 09_Base_demo.sql
 # Y el modo continuo (continuar) debe estar detenido.
 
 # ---- PASO 0. Preparar la sesión (apunta a la base DEMO) -----------------------------------
-stopifnot(file.exists('04_Carga_USGS.R'), file.exists('datos_demo/inicial.json'),
+stopifnot(file.exists('r/04_Carga_USGS.R'), file.exists('datos_demo/inicial.json'),
           file.exists('datos_demo/reservado.json'))   # el directorio de trabajo debe ser la carpeta del proyecto
 Sys.setenv(PGUSER = 'postgres', PGDATABASE = 'observatorio_demo', PGPORT = '5432')
 Sys.setenv(PGPASSWORD = rstudioapi::askForPassword('Contraseña local de PostgreSQL'))
-source('04_Carga_USGS.R')   # solo define funciones
+source('r/04_Carga_USGS.R')   # solo define funciones
 
 # Ayudantes de esta prueba
 verificar_demo <- function() {   # evita cargar por error en la base real

@@ -38,30 +38,44 @@ Preguntas que responde el informe:
 
 ## 4. Contenido del paquete
 
+```
+JOSE_SANTIAGO_Observatorio/
+├─ JOSE_SANTIAGO_Observatorio.pbix   informe de Power BI
+├─ JOSE_SANTIAGO_Observatorio.Rproj  abrir primero en RStudio (fija la raíz)
+├─ README.md · diccionario_datos.txt
+├─ sql/          estructura, vistas, verificaciones y base demo
+├─ r/            carga desde el USGS y prueba reproducible
+├─ datos_demo/   lotes reales de la prueba y su procedencia
+├─ Evidencia/    capturas, validación contra SQL y diagramas
+└─ docs/         guía de la actividad, instalación y medidas DAX
+```
+
+Todas las rutas de este documento son relativas a la raíz del proyecto.
+
 ### 4.1 Material recibido en la actividad (sin modificar)
 
 | Archivo                                                                           | Para qué sirve                                                                                                           |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `00_LEEME.txt`, `01_Guia_Actividad.md` / `.html`, `02_Instalacion_y_Ejecucion.md` | Guía de la actividad e instrucciones de instalación y ejecución                                                          |
-| `03_Estructura.sql` (base)                                                        | Esquema `observatorio`, tablas `eventos` y `cargas`, vistas `v_eventos` y `v_cargas`, permisos de `pbi_lector`           |
-| `04_Carga_USGS.R`                                                                 | Funciones `cargar()`, `preparar_demo()` y `continuar()`                                                                  |
-| `05_Verificaciones.sql`                                                           | Consultas de control: conteo, ids únicos, faltantes y cargas                                                             |
+| `docs/00_LEEME.txt`, `docs/01_Guia_Actividad.md`, `docs/02_Instalacion_y_Ejecucion.md` | Guía de la actividad e instrucciones de instalación y ejecución                                                          |
+| `sql/03_Estructura.sql` (base)                                                        | Esquema `observatorio`, tablas `eventos` y `cargas`, vistas `v_eventos` y `v_cargas`, permisos de `pbi_lector`           |
+| `r/04_Carga_USGS.R`                                                                 | Funciones `cargar()`, `preparar_demo()` y `continuar()`                                                                  |
+| `sql/05_Verificaciones.sql`                                                           | Consultas de control: conteo, ids únicos, faltantes y cargas                                                             |
 | `datos_demo/`                                                                     | `inicial.json`, `reservado.json` y `procedencia.txt`: captura real del USGS (18 oct 2026) generada con `preparar_demo()` |
 
 ### 4.2 Aportes del grupo
 
 | Archivo                          | Para qué sirve                                                                                                                                              |
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `03_Estructura.sql` (ampliación) | Se añadió la tabla `paises_latam`, el catálogo que asigna el país a cada sismo                                                                              |
-| `06_Vista_eventos_pais.sql`      | **Vista propia 1:** `v_eventos_pais`, con país, grupo (Colombia / resto de Latinoamérica / resto del mundo), intervalos de magnitud y tramos de profundidad |
-| `07_Vistas_mcp.sql`              | **Vista propia 2:** `v_paises` y permisos de lectura                                                                                                        |
-| `select.sql`                     | Consultas propias para construir y probar la clasificación por país                                                                                         |
-| `carga.R`                        | **Orquestador de la carga en vivo:** define las variables de entorno, carga `04_Carga_USGS.R` y llama a `cargar()` sobre `observatorio_sismico`            |
-| `10_Prueba_demo.R`               | **Orquestador de la prueba reproducible:** apunta a `observatorio_demo` y ejecuta, paso a paso y con verificaciones, la carga inicial, la del lote reservado y la repetición |
-| `09_Base_demo.sql`               | Permisos de `pbi_lector` y verificaciones para la base `observatorio_demo` de la prueba reproducible                                                        |
+| `sql/03_Estructura.sql` (ampliación) | Se añadió la tabla `paises_latam`, el catálogo que asigna el país a cada sismo                                                                              |
+| `sql/06_Vista_eventos_pais.sql`      | **Vista propia 1:** `v_eventos_pais`, con país, grupo (Colombia / resto de Latinoamérica / resto del mundo), intervalos de magnitud y tramos de profundidad |
+| `sql/07_Vistas_paises.sql`              | **Vista propia 2:** `v_paises` y permisos de lectura                                                                                                        |
+| `sql/vistas_propias.sql`                     | Consultas propias para construir y probar la clasificación por país                                                                                         |
+| `r/carga.R`                        | **Orquestador de la carga en vivo:** define las variables de entorno, carga `r/04_Carga_USGS.R` y llama a `cargar()` sobre `observatorio_sismico`            |
+| `r/10_Prueba_demo.R`               | **Orquestador de la prueba reproducible:** apunta a `observatorio_demo` y ejecuta, paso a paso y con verificaciones, la carga inicial, la del lote reservado y la repetición |
+| `sql/09_Base_demo.sql`               | Permisos de `pbi_lector` y verificaciones para la base `observatorio_demo` de la prueba reproducible                                                        |
 | `Evidencia/`                     | Validación contra SQL (`validacion_sql.md`), guion de la prueba (`guion_prueba.md`) y capturas                                                              |
-| `sismov2.pbip`                   | Informe de Power BI de tres páginas                                                                                                                         |
-| `Medidas_DAX.md`                 | Medidas DAX del informe                                                                                                                                     |
+| `JOSE_SANTIAGO_Observatorio.pbix`                   | Informe de Power BI de tres páginas                                                                                                                         |
+| `docs/Medidas_DAX.md`                 | Medidas DAX del informe                                                                                                                                     |
 | `diccionario_datos.txt`          | Diccionario de datos completo                                                                                                                               |
 | `README.md`                      | Este documento                                                                                                                                              |
 
@@ -70,18 +84,18 @@ Preguntas que responde el informe:
 No se incluye ninguna contraseña; cada equipo usa las suyas.
 
 1. Instalar PostgreSQL (servidor y pgAdmin), R, RStudio y Power BI Desktop. Anotar la contraseña de `postgres` y el puerto (normalmente 5432).
-2. En pgAdmin crear la base `observatorio_sismico`. En su Query Tool ejecutar, en orden: `03_Estructura.sql`, `06_Vista_eventos_pais.sql`, `07_Vistas_mcp.sql`.
+2. En pgAdmin crear la base `observatorio_sismico`. En su Query Tool ejecutar, en orden: `sql/03_Estructura.sql`, `sql/06_Vista_eventos_pais.sql`, `sql/07_Vistas_paises.sql`.
 3. Crear el rol `pbi_lector` (Can login, contraseña propia) y darle solo lectura: `CONNECT` sobre la base, `USAGE` sobre el esquema y `SELECT` sobre `v_eventos`, `v_cargas`, `v_eventos_pais` y `v_paises`. Cada vista nueva necesita su propio `GRANT SELECT`; sin él Power BI devuelve *permission denied*.
-4. En RStudio abrir la carpeta como proyecto y, en la consola:
+4. En RStudio abrir `JOSE_SANTIAGO_Observatorio.Rproj` (fija la raíz como directorio de trabajo) y, en la consola:
    ```r
    install.packages(c('DBI','RPostgres','jsonlite','httr2','rstudioapi'))
    Sys.setenv(PGUSER='postgres', PGDATABASE='observatorio_sismico', PGPORT='5432')
    Sys.setenv(PGPASSWORD=rstudioapi::askForPassword('Contraseña de PostgreSQL'))
-   source('04_Carga_USGS.R')   # solo define funciones
+   source('r/04_Carga_USGS.R')   # solo define funciones
    cargar()                    # una carga desde el USGS
    ```
-5. Verificar con `05_Verificaciones.sql` (conteo, ids únicos, sin duplicados).
-6. Abrir `sismov2.pbip` en Power BI Desktop, apuntar el origen a `localhost:5432` / `observatorio_sismico` con autenticación de base de datos (`pbi_lector`). Tablas en **DirectQuery**.
+5. Verificar con `sql/05_Verificaciones.sql` (conteo, ids únicos, sin duplicados).
+6. Abrir `JOSE_SANTIAGO_Observatorio.pbix` en Power BI Desktop, apuntar el origen a `localhost:5432` / `observatorio_sismico` con autenticación de base de datos (`pbi_lector`). Tablas en **DirectQuery**.
 7. Cada página tiene **actualización automática de página con intervalo fijo de 1 minuto** (Formato de página → Actualización de página).
 8. Modo continuo: `continuar(300)` (una carga cada 300 s; detener con Esc/Stop). Para ver cambios deben estar encendidos el PC, PostgreSQL, R y Power BI.
 
@@ -92,31 +106,31 @@ No se incluye ninguna contraseña; cada equipo usa las suyas.
 | Orden | Archivo | Qué hace |
 |---|---|---|
 | 1 | *(pgAdmin)* | Crear la base y el rol `pbi_lector` |
-| 2 | `03_Estructura.sql` | Esquema, tablas, `v_eventos`, `v_cargas` y `paises_latam` |
-| 3 | `06_Vista_eventos_pais.sql` | Vista `v_eventos_pais` |
-| 4 | `07_Vistas_mcp.sql` | Vista `v_paises` y permisos de lectura |
-| 5 | `05_Verificaciones.sql` | Conteo, ids únicos, faltantes y cargas |
-| 6 | `09_Base_demo.sql` | Solo en `observatorio_demo`: permisos de `pbi_lector` y verificaciones de la prueba |
+| 2 | `sql/03_Estructura.sql` | Esquema, tablas, `v_eventos`, `v_cargas` y `paises_latam` |
+| 3 | `sql/06_Vista_eventos_pais.sql` | Vista `v_eventos_pais` |
+| 4 | `sql/07_Vistas_paises.sql` | Vista `v_paises` y permisos de lectura |
+| 5 | `sql/05_Verificaciones.sql` | Conteo, ids únicos, faltantes y cargas |
+| 6 | `sql/09_Base_demo.sql` | Solo en `observatorio_demo`: permisos de `pbi_lector` y verificaciones de la prueba |
 
 **R:**
 
 | Orden | Archivo | Qué hace |
 |---|---|---|
-| 1 | `04_Carga_USGS.R` | Define `cargar()`, `preparar_demo()` y `continuar()`; no carga nada por sí solo |
-| 2 | `carga.R` | Carga en vivo sobre la base real |
-| 3 | `10_Prueba_demo.R` | Prueba reproducible sobre la base demo |
+| 1 | `r/04_Carga_USGS.R` | Define `cargar()`, `preparar_demo()` y `continuar()`; no carga nada por sí solo |
+| 2 | `r/carga.R` | Carga en vivo sobre la base real |
+| 3 | `r/10_Prueba_demo.R` | Prueba reproducible sobre la base demo |
 
 ### Prueba reproducible (base `observatorio_demo`)
 
-El script de R carga datos del USGS en vivo en la base real, o los lotes guardados en la base demo. Power BI nunca lee los JSON: los lee R y los escribe en PostgreSQL, y Power BI consulta la base. Es un **único informe** (`sismov2.pbip`): para la demostración solo se le cambia el origen de datos a `observatorio_demo` y después se devuelve a `observatorio_sismico`.
+El script de R carga datos del USGS en vivo en la base real, o los lotes guardados en la base demo. Power BI nunca lee los JSON: los lee R y los escribe en PostgreSQL, y Power BI consulta la base. Es un **único informe** (`JOSE_SANTIAGO_Observatorio.pbix`): para la demostración solo se le cambia el origen de datos a `observatorio_demo` y después se devuelve a `observatorio_sismico`.
 
 ![Un solo informe, dos bases](Evidencia/flujo_demo.png)
 
 Preparación:
 
-1. Con el modo continuo detenido, crear en pgAdmin la base vacía `observatorio_demo` y ejecutar allí `03_Estructura.sql`, `06_Vista_eventos_pais.sql`, `07_Vistas_mcp.sql` y `09_Base_demo.sql`.
+1. Con el modo continuo detenido, crear en pgAdmin la base vacía `observatorio_demo` y ejecutar allí `sql/03_Estructura.sql`, `sql/06_Vista_eventos_pais.sql`, `sql/07_Vistas_paises.sql` y `sql/09_Base_demo.sql`.
 2. En Power BI: *Transformar datos → Configuración de origen de datos → Cambiar origen* a `observatorio_demo`, y quitar los filtros que oculten los eventos del lote reservado.
-3. En RStudio, ejecutar `10_Prueba_demo.R` **línea por línea** (no con `source()`); cada paso trae el resultado esperado.
+3. En RStudio, ejecutar `r/10_Prueba_demo.R` **línea por línea** (no con `source()`); cada paso trae el resultado esperado.
 
 Qué se debe observar:
 
@@ -156,7 +170,7 @@ Campos derivados en `v_eventos_pais`: `fecha_dia` (día UTC), `pais`, `subregion
 
 ## 7. Definición de los indicadores
 
-Período: por defecto todo el rango cargado (18 sep – 20 oct 2026 UTC). Los segmentadores de cada página permiten acotarlo, y los indicadores se recalculan con ese filtro. Las medidas están en `sismov2.SemanticModel` (ver `Medidas_DAX.md`).
+Período: por defecto todo el rango cargado (18 sep – 20 oct 2026 UTC). Los segmentadores de cada página permiten acotarlo, y los indicadores se recalculan con ese filtro. Las medidas están en el modelo del informe (ver `docs/Medidas_DAX.md`).
 
 | Indicador | Definición | Unidad | Faltantes | Decisión o tarea que apoya |
 |---|---|---|---|---|
