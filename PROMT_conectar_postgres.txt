@@ -1,0 +1,254 @@
+=====================================================================
+PROMT: CONECTAR POSTGRESQL A CLAUDE CODE (MCP), UNA BASE POR PROYECTO
+=====================================================================
+
+IDEA GENERAL
+- Cada proyecto tiene su propio servidor MCP llamado "postgres" que
+  apunta a SU base de datos.
+- Se guarda en alcance "local": solo vale para la carpeta donde se
+  ejecuta el comando. La conexion queda en C:\Users\pc\.claude.json,
+  fuera del repo, asi que la clave NO se sube a GitHub.
+- Claude se conecta con un usuario de SOLO LECTURA. Puede hacer SELECT,
+  pero no crear tablas ni modificar datos.
+
+PROYECTOS DE EJEMPLO
+- Sismos : base observatorio_sismico | carpeta C:\JOSE\Proyectos GitHub\sismo
+- Futbol : base futbol               | carpeta C:\JOSE\Proyectos GitHub\futbol
+  (ajusta la ruta de la carpeta si es otra)
+
+REQUISITOS
+- PostgreSQL corriendo en localhost:5432
+- pgAdmin para ejecutar el SQL
+- Node.js instalado (el comando usa npx)
+- Claude Code instalado (comando: claude)
+
+
+=====================================================================
+PASO 1. ELEGIR EL USUARIO DE LECTURA
+=====================================================================
+Los usuarios (roles) de PostgreSQL valen para todo el servidor, no hay
+que crear uno por base. Lo que cambia es el permiso dentro de cada base.
+
+OPCION A: usar pbi_lector (el que usa Power BI)
+  Claude ve solo lo que le des permiso (por ejemplo, solo la vista).
+
+OPCION B: crear claude_ro
+  Claude puede leer todas las tablas. Sirve para revisar el diseno de
+  la base o mejorar la consulta de la vista.
+
+Para saber si un usuario ya existe (pgAdmin, Query Tool):
+
+  SELECT rolname FROM pg_roles WHERE rolname = 'claude_ro';
+
+  - Devuelve una fila: ya existe, NO ejecutes el CREATE ROLE.
+  - Sale vacio: no existe, ejecutalo.
+
+Crear el usuario (solo una vez, solo si elegiste la opcion B):
+
+  CREATE ROLE claude_ro LOGIN PASSWORD 'CLAVE_SOLO_LETRAS_Y_NUMEROS';
+
+Cambiar la clave de un usuario que ya existe:
+
+  ALTER ROLE claude_ro PASSWORD 'NUEVA_CLAVE';
+
+
+=====================================================================
+PASO 2. DAR PERMISOS EN LA BASE (SQL EN pgAdmin)
+=====================================================================
+IMPORTANTE: abre la Query Tool conectada a LA BASE DE ESTE PROYECTO
+(revisa en el arbol de la izquierda que no sea "postgres" ni otra).
+Estos GRANT se ejecutan una vez por cada base.
+
+--- Base de sismos (conectado a observatorio_sismico) ---
+
+  GRANT CONNECT ON DATABASE observatorio_sismico TO pbi_lector;
+  GRANT USAGE ON SCHEMA public TO pbi_lector;
+  GRANT SELECT ON nombre_de_la_vista TO pbi_lector;
+
+--- Base de futbol (conectado a futbol) ---
+
+  GRANT CONNECT ON DATABASE futbol TO pbi_lector;
+  GRANT USAGE ON SCHEMA public TO pbi_lector;
+  GRANT SELECT ON nombre_de_la_vista TO pbi_lector;
+
+Para dar lectura a TODAS las tablas del esquema (opcion B o si lo
+prefieres), cambia la ultima linea por:
+
+  GRANT SELECT ON ALL TABLES IN SCHEMA public TO claude_ro;
+
+Para que las tablas que crees en el futuro tambien queden incluidas:
+
+  ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO claude_ro;
+
+Si tus tablas o vistas estan en otro esquema (no "public"), cambia el
+nombre del esquema en el USAGE y en el SELECT.
+
+Seguridad extra (versiones de PostgreSQL 14 o menores permiten crear
+tablas en "public" por defecto). Ejecutalo en cada base:
+
+  REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+
+Version de PostgreSQL:
+
+  SELECT version();
+
+
+=====================================================================
+PASO 3. REGISTRAR EL MCP (TERMINAL POWERSHELL)
+=====================================================================
+Ejecuta el comando DENTRO de la carpeta del proyecto.
+
+--- Proyecto de sismos ---
+
+  cd "C:\JOSE\Proyectos GitHub\sismo"
+  claude mcp add --scope local postgres -- cmd /c npx -y @modelcontextprotocol/server-postgres postgresql://pbi_lector:TU_CLAVE@localhost:5432/observatorio_sismico
+
+--- Proyecto de futbol ---
+
+  cd "C:\JOSE\Proyectos GitHub\futbol"
+  claude mcp add --scope local postgres -- cmd /c npx -y @modelcontextprotocol/server-postgres postgresql://pbi_lector:TU_CLAVE@localhost:5432/futbol
+
+PLANTILLA GENERAL (copiala y cambia lo que esta en MAYUSCULAS):
+
+  cd "RUTA_DE_LA_CARPETA"
+  claude mcp add --scope local postgres -- cmd /c npx -y @modelcontextprotocol/server-postgres postgresql://USUARIO:CLAVE@localhost:5432/NOMBRE_DE_LA_BASE
+
+Si usas claude_ro, cambia pbi_lector por claude_ro y pon su clave.
+
+ATENCION CON LA CLAVE: si tiene caracteres como @ # / : la URL se
+rompe y la conexion falla. Usa una clave solo con letras y numeros.
+
+
+=====================================================================
+PASO 4. VERIFICAR
+=====================================================================
+En la misma carpeta:
+
+  claude mcp get postgres
+
+Debe mostrar:
+  - Scope: Local config
+  - Status: Connected
+  - La URL terminando en la base correcta (/observatorio_sismico o /futbol)
+
+Luego abre Claude en esa carpeta (si ya estaba abierto, ciérralo y
+vuelve a abrirlo, porque no toma el cambio en caliente):
+
+  claude
+
+Dentro de la sesion escribe:
+
+  /mcp
+
+Debe aparecer "postgres" con una palomita verde y 1 tool.
+
+
+=====================================================================
+PASO 5. PROBAR
+=====================================================================
+1) Pidele: "lista las tablas y vistas que puedes leer".
+   Si ves mas objetos de los esperados, revisa los permisos con la
+   consulta de abajo.
+
+2) Pidele: "crea una tabla de prueba".
+   Debe fallar con "permission denied". Si la crea, el usuario tiene
+   mas permisos de los que debe.
+
+Consulta para ver que puede leer un usuario (pgAdmin, en la base del
+proyecto). Cambia 'pbi_lector' por el usuario que uses:
+
+  SELECT n.nspname AS esquema, c.relname AS objeto, c.relkind,
+         has_table_privilege('pbi_lector', c.oid, 'SELECT') AS puede_leer
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')
+    AND c.relkind IN ('r', 'v', 'm')
+  ORDER BY puede_leer DESC, esquema, objeto;
+
+  relkind: r = tabla, v = vista, m = vista materializada.
+
+
+=====================================================================
+PROBLEMAS FRECUENTES: "permission denied" O RESULTADOS VACIOS
+=====================================================================
+Caso real en sismos: las tablas (cargas, eventos, paises_latam) estan
+en el esquema "observatorio", NO en "public". Los GRANT del PASO 2 sobre
+"public" no sirven si las tablas estan en otro esquema.
+
+Sintomas:
+- Claude dice que no hay tablas (information_schema sale vacio): ese
+  catalogo solo muestra lo que el usuario tiene permiso de leer.
+- SELECT falla con "permission denied for table ...".
+
+Diagnostico (el usuario de la conexion se ve con SELECT current_user;):
+- Con el usuario de la conexion, listar tablas sin depender de permisos:
+
+    SELECT schemaname, tablename FROM pg_tables
+    WHERE schemaname NOT IN ('pg_catalog','information_schema');
+
+- Para ver cuantos usuarios/roles tienen acceso, usa la consulta del
+  PASO 5.
+
+Solucion: conectarse en pgAdmin como postgres (o el dueno de las
+tablas), en la base del proyecto, y ejecutar con el esquema correcto:
+
+  GRANT USAGE ON SCHEMA observatorio TO pbi_lector;
+  GRANT SELECT ON ALL TABLES IN SCHEMA observatorio TO pbi_lector;
+  ALTER DEFAULT PRIVILEGES IN SCHEMA observatorio
+    GRANT SELECT ON TABLES TO pbi_lector;
+
+Notas:
+- Los permisos son por usuario: dar permisos a claude_ro no sirve si
+  el MCP se registro con pbi_lector (y al reves).
+- ALTER DEFAULT PRIVILEGES solo cubre las tablas que cree quien lo
+  ejecuta. Si las crea otro usuario, agrega FOR ROLE dueno.
+- Se deshace con REVOKE SELECT ON ALL TABLES IN SCHEMA observatorio
+  FROM pbi_lector; y REVOKE USAGE ON SCHEMA observatorio FROM pbi_lector;
+- Si pbi_lector tambien lo usa Power BI, ese acceso se le da a ambos.
+- Con solo pg_class se puede estimar filas sin permiso de SELECT:
+  SELECT relname, reltuples::bigint FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = 'observatorio' AND c.relkind = 'r';
+  (es aproximado; depende de ANALYZE/autovacuum)
+
+
+=====================================================================
+COMANDOS UTILES
+=====================================================================
+Ver todos los servidores MCP y su estado:
+
+  claude mcp list
+
+Ver el detalle de uno (alcance, comando, base):
+
+  claude mcp get postgres
+
+Quitar el servidor de un proyecto (ejecutar dentro de su carpeta):
+
+  claude mcp remove postgres -s local
+
+Quitar uno global (alcance user), si apareciera en todos los proyectos:
+
+  claude mcp remove postgres -s user
+
+Cambiar la clave: primero en PostgreSQL
+
+  ALTER ROLE pbi_lector PASSWORD 'NUEVA_CLAVE';
+
+luego actualizar Power BI y volver a registrar el MCP (quitar con
+"claude mcp remove postgres -s local" y repetir el comando del PASO 3).
+
+
+=====================================================================
+SEGURIDAD
+=====================================================================
+- No compartas capturas donde se vea la clave dentro del comando.
+- No guardes el comando con la clave dentro del repo de GitHub. Si algun
+  dia usas un archivo .mcp.json (alcance project, se sube al repo), usa
+  una variable de entorno en lugar de escribir la clave.
+- Si una clave ya aparecio en capturas, cambiala con ALTER ROLE.
+- No uses el usuario "postgres" para Claude: es superusuario y podria
+  borrar o modificar todo.
+- Una base por proyecto: evita dejar un servidor "postgres" en alcance
+  user, porque se veria en todos los proyectos y Claude podria consultar
+  la base equivocada.

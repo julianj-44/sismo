@@ -38,6 +38,26 @@
           }
         }
       }
+    ],
+    "pageRefresh": [
+      {
+        "properties": {
+          "show": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          },
+          "duration": {
+            "expr": {
+              "Literal": {
+                "Value": "'PT1M'"
+              }
+            }
+          }
+        }
+      }
     ]
   }
 }

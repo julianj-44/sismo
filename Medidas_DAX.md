@@ -47,18 +47,19 @@ CALCULATE(MAX(v_cargas[fin_utc]), v_cargas[estado] = "ok")
 | Eventos en Colombia | `Eventos Colombia` (con `% Colombia` y `Magnitud máx. Colombia` en la nota) |
 | Calidad y actualidad | `Última carga exitosa UTC` |
 
-## Valores esperados (datos del 18 oct 2026)
+## Valores esperados (SQL del 24 oct 2026, sin filtros)
 
-Sirven para validar contra SQL bajo los mismos filtros.
+Sirven para validar contra SQL bajo los mismos filtros. Detalle y consultas en `Evidencia/validacion_sql.md`.
 
 | Medida | Valor |
 |---|---|
-| Eventos | 9.729 |
+| Eventos | 10.514 |
 | Magnitud máxima | 7,7 |
 | Eventos Colombia | 36 |
-| % Colombia | 0,4 % |
+| % Colombia | 0,34 % |
 | Magnitud máx. Colombia | 4,8 |
-| Último evento UTC | 18 oct 2026 18:20 |
+| Último evento UTC | 20 oct 2026 21:38 |
+| Última carga exitosa UTC | 20 oct 2026 21:43 |
 
 ## Notas
 

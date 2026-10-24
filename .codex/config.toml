@@ -1,0 +1,9 @@
+[mcp_servers.postgres]
+command = "cmd"
+args = [
+    "/c",
+    "npx",
+    "-y",
+    "@modelcontextprotocol/server-postgres",
+    "postgresql://pbi_lector:202sismo@localhost:5432/observatorio_sismico",
+]

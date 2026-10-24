@@ -1,0 +1,239 @@
+══════════════════════════════════════════════════════════════════════
+  RESUMEN — QUÉ HAY QUE CONSTRUIR Y EN QUÉ ORDEN
+══════════════════════════════════════════════════════════════════════
+
+  Flujo: USGS → script R → PostgreSQL local → Power BI (DirectQuery)
+  Producto: informe de 3 páginas (Panorama, Análisis, Calidad)
+  Entrega: ZIP Grupo_XX_Observatorio (PBIX, SQL, R, lotes, README)
+  El análisis es descriptivo: no es predicción ni alerta temprana
+
+  ─────────────────────────────────────────────────────────────────
+  PESO DE LA NOTA
+  ─────────────────────────────────────────────────────────────────
+
+  Análisis e interpretación 30% · Integración y actualización 25%
+  Organización y calidad 20% · Diseño y uso 15% · Reproducibilidad 10%
+  → lo que más pesa es validar e interpretar, no la estética
+
+══════════════════════════════════════════════════════════════════════
+  FASE 0 — ANTES DE TOCAR NADA
+══════════════════════════════════════════════════════════════════════
+
+  0.1 Definan equipo de integración y repartan: captura/calidad,
+      SQL, visualización e interpretación
+  0.2 Todos deben poder explicar el flujo completo en la sustentación
+  0.3 Anoten las fechas y la duración de sustentación del campus
+      virtual (no vienen en el paquete) y fijen fechas internas
+  0.4 Descompriman el paquete y lean 00_LEEME.txt
+
+══════════════════════════════════════════════════════════════════════
+  FASE 1 — DEFINIR EL PROBLEMA (Etapa 1)
+══════════════════════════════════════════════════════════════════════
+
+  1.1 Elijan un usuario (ej. un equipo de seguimiento sísmico)
+  1.2 Formulen 3 preguntas que el tablero deba responder
+  1.3 Delimiten período, cobertura y criterios de inclusión
+      (el código solo conserva type = earthquake)
+  1.4 Escriban qué decisión o tarea apoya cada indicador
+  Salida: primer párrafo del README
+
+══════════════════════════════════════════════════════════════════════
+  FASE 2 — INSTALAR (un computador Windows por grupo)
+══════════════════════════════════════════════════════════════════════
+
+  2.1 PostgreSQL (servidor + pgAdmin): guarden la contraseña de
+      postgres y el puerto (normalmente 5432)
+  2.2 R y RStudio Desktop
+  2.3 Power BI Desktop (fuente oficial de Microsoft)
+  2.4 No abren puertos a internet ni configuran gateway
+
+══════════════════════════════════════════════════════════════════════
+  FASE 3 — BASE DE DATOS Y USUARIO DE LECTURA (Etapa 2)
+══════════════════════════════════════════════════════════════════════
+
+  3.1 pgAdmin → Databases → Create → Database: observatorio_sismico
+      (si ya la creaste, sigue al 3.2)
+  3.2 Query Tool sobre ESA base → abrir y ejecutar 03_Estructura.sql
+      (el script no crea la base)
+  3.3 Crear Login/Group Role pbi_lector con Can login y contraseña
+      propia
+  3.4 Ejecutar por separado los 3 GRANT del final del SQL, quitando
+      los prefijos --. Solo lectura, sin permisos de escritura
+
+══════════════════════════════════════════════════════════════════════
+  FASE 4 — PRIMERA CARGA CON R (Etapa 2)
+══════════════════════════════════════════════════════════════════════
+
+  4.1 RStudio → File → New Project → Existing Directory (carpeta
+      del paquete)
+  4.2 En la consola:
+    install.packages(c('DBI','RPostgres','jsonlite','httr2'))
+    Sys.setenv(PGUSER='postgres', PGDATABASE='observatorio_sismico',
+      PGPORT='5432')
+    Sys.setenv(PGPASSWORD=rstudioapi::askForPassword('Contraseña'))
+    source('04_Carga_USGS.R')
+  4.3 Ejecutar una carga: cargar()
+  4.4 Verificar en pgAdmin con 05_Verificaciones.sql (conteo, ids
+      únicos, sin duplicados)
+  ✗ source() no carga nada: solo define funciones
+  ✗ Si falla rstudioapi → install.packages('rstudioapi')
+    (no está en la línea de instalación de la guía)
+
+══════════════════════════════════════════════════════════════════════
+  FASE 5 — CONECTAR POWER BI Y CERRAR EL PRIMER HITO (Etapa 2)
+══════════════════════════════════════════════════════════════════════
+
+  5.1 Obtener datos → Base de datos PostgreSQL
+  5.2 Servidor localhost:5432, base observatorio_sismico, modo
+      DirectQuery
+  5.3 Autenticación de base de datos con pbi_lector (no es la
+      cuenta de Microsoft)
+  5.4 Seleccionar observatorio.v_eventos y observatorio.v_cargas,
+      ambas en DirectQuery
+  5.5 Si avisa de cifrado: aceptar solo porque el destino es localhost
+  5.6 Tarjeta con el conteo de id y compararla con el SQL
+  ✓ Hito cumplido cuando ambos números coinciden
+  5.7 Crear las 4 medidas DAX iniciales: Eventos, Magnitud máxima,
+      Último evento UTC, Última carga exitosa UTC
+  5.8 Latitud y longitud categorizadas (no sumarlas)
+
+══════════════════════════════════════════════════════════════════════
+  FASE 6 — CALIDAD Y ORGANIZACIÓN (Etapa 3)
+══════════════════════════════════════════════════════════════════════
+
+  6.1 Documentar tipos, unidades, zona horaria (UTC), faltantes y
+      unicidad del id
+  6.2 Distinguir las tres fechas: del evento, de revisión en la
+      fuente y de carga
+  6.3 No reemplazar magnitudes faltantes por 0; conservar negativas
+      válidas
+  6.4 No equiparar magnitud con intensidad ni con energía; distinguir
+      tipos de magnitud al comparar
+  6.5 Definir los filtros temporales del informe (la base acumula
+      eventos aunque salgan de la ventana de 30 días)
+  6.6 Declarar como limitación: no se reconcilian eliminaciones,
+      fusiones ni revisiones de eventos fuera de la ventana móvil
+  Salida: diccionario de datos y sección de limitaciones del README
+
+══════════════════════════════════════════════════════════════════════
+  FASE 7 — CONSULTAS E INDICADORES PROPIOS (Etapa 4)
+══════════════════════════════════════════════════════════════════════
+
+  7.1 Crear al menos 2 consultas o vistas SQL propias con utilidad
+      analítica
+  7.2 A cada vista nueva hay que darle GRANT SELECT a pbi_lector,
+      si no sale "permission denied" en Power BI
+  7.3 Definir por escrito cada indicador: numerador, denominador (si
+      aplica), unidad, período y tratamiento de faltantes
+  7.4 Contrastar 3 resultados de Power BI con SQL bajo los mismos
+      filtros
+  Salida: SQL del grupo + tabla de indicadores y validaciones
+
+══════════════════════════════════════════════════════════════════════
+  FASE 8 — INFORME DE 3 PÁGINAS (Etapa 5)
+══════════════════════════════════════════════════════════════════════
+
+  PÁGINA 1 · PANORAMA
+  ─────────────────────────────────────────────────────────────────
+  Conteo de eventos, magnitud máxima, último evento
+  Mapa (o alternativa geográfica documentada si está bloqueado)
+  Filtros por período, magnitud y profundidad
+
+  PÁGINA 2 · ANÁLISIS
+  ─────────────────────────────────────────────────────────────────
+  Evolución temporal, distribución de magnitud y profundidad
+  Comparación argumentada de subconjuntos
+  Tres hallazgos escritos
+
+  PÁGINA 3 · CALIDAD Y ACTUALIDAD
+  ─────────────────────────────────────────────────────────────────
+  Faltantes, última carga exitosa, evento más reciente
+  Estado de cargas y limitaciones
+
+  ─────────────────────────────────────────────────────────────────
+  TRANSVERSAL
+  ─────────────────────────────────────────────────────────────────
+
+  8.1 UTC, unidades, fuente y período visibles
+  8.2 Formato de página → Actualización de página, intervalo fijo
+      de 1 minuto, en cada página que se use para demostrar
+      (requiere DirectQuery)
+  8.3 No relacionar cargas con eventos: las cargas describen
+      ejecuciones, no son dimensión del evento
+  8.4 Navegación coherente entre las 3 páginas
+
+══════════════════════════════════════════════════════════════════════
+  FASE 9 — PRUEBA REPRODUCIBLE (Etapa 6)
+══════════════════════════════════════════════════════════════════════
+
+  PREPARACIÓN
+  ─────────────────────────────────────────────────────────────────
+  9.1 Detener el modo continuo (Esc/Stop)
+  9.2 Crear una base NUEVA y vacía: observatorio_demo
+  9.3 Ejecutar en ella 03_Estructura.sql y reotorgar a pbi_lector:
+      CONNECT sobre observatorio_demo, USAGE del esquema y SELECT
+      en las vistas (incluidas las propias)
+  9.4 En R: Sys.setenv(PGDATABASE='observatorio_demo')
+  9.5 Con la tabla vacía:
+    preparar_demo()
+    cargar('datos_demo/inicial.json')
+  9.6 Apuntar Power BI a observatorio_demo (cambiar el origen de
+      datos del PBIX o crear una conexión nueva)
+  9.7 Quitar filtros que oculten los eventos reservados
+  9.8 Conservar inicial.json, reservado.json y procedencia.txt
+  ✗ No ejecutar continuar() ni cargar() sin archivo hasta terminar:
+    cargaría también el lote reservado
+  Ensayen con otra carpeta (ej. preparar_demo('datos_ensayo')) y
+  otra base: el reservado de la sustentación no puede estar cargado
+
+  SUSTENTACIÓN, EN ORDEN
+  ─────────────────────────────────────────────────────────────────
+  1 Mostrar el conteo inicial en Power BI
+  2 Ejecutar cargar('datos_demo/reservado.json')
+  3 Contrastar el aumento con SQL
+  4 Esperar el refresco automático de Power BI
+  5 Repetir exactamente la misma carga → el conteo no aumenta,
+    afectados = 0 y no hay duplicados ✓
+  Presentarla como reproducción controlada de datos reales con
+  fechas originales conservadas
+  Al final, modo continuo: cargar() y continuar(300)
+
+══════════════════════════════════════════════════════════════════════
+  FASE 10 — ENTREGABLES (ZIP Grupo_XX_Observatorio)
+══════════════════════════════════════════════════════════════════════
+
+  10.1 Grupo_XX_Observatorio.pbix
+  10.2 SQL de estructura, vistas, verificaciones y aportes propios
+  10.3 Script R y configuración de ejemplo, SIN contraseñas
+  10.4 Lotes reales de la demo y evidencia de fecha/fuente de
+       descarga (datos_demo/ con procedencia.txt)
+  10.5 README: integrantes, pasos para reproducir, versiones,
+       diccionario, definiciones de indicadores, validaciones,
+       tres hallazgos y limitaciones
+  10.6 Evidencia: capturas antes/después y resultados SQL
+  ✗ Compartir el PBIX no comparte la base: otro equipo debe
+    reconstruirla con los scripts y sus propias credenciales
+
+══════════════════════════════════════════════════════════════════════
+  ALERTAS RÁPIDAS
+══════════════════════════════════════════════════════════════════════
+
+  afectados = 0 en una carga no es error: solo no hubo nada nuevo
+  Si falla la descarga, el tablero conserva los datos previos y la
+  página 3 debe mostrarlo
+  Para observar cambios: PC encendido, PostgreSQL activo, R
+  ejecutándose y Power BI abierto en la página con refresco
+  La integración R–PostgreSQL–Power BI no se probó en el paquete:
+  el primer hito es esa prueba, en el equipo del grupo
+  Errores típicos: Connection refused → servicio/puerto · Password
+  authentication failed → credenciales · Relation does not exist →
+  SQL en otra base · Permission denied → GRANT o USAGE
+
+══════════════════════════════════════════════════════════════════════
+  PRÓXIMOS PASOS
+══════════════════════════════════════════════════════════════════════
+
+  → Cerrar Fases 0 y 1 (roles y 3 preguntas) antes de seguir
+  → Si ya tienes la base creada, continuar desde la Fase 3.2
+  → Cuando llegues a Fase 6–7 puedo redactar las vistas SQL, las
+    medidas DAX y la plantilla del README
