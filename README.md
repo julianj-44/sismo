@@ -46,7 +46,7 @@ JOSE_SANTIAGO_Observatorio/
 ├─ sql/            estructura, vistas, consultas propias, verificaciones y base demo
 ├─ r/              carga desde el USGS y prueba reproducible
 ├─ datos_demo/     lotes reales de la prueba y su procedencia
-├─ Documentacion/  guía, instalación, medidas DAX, diccionario, esquema y diagrama del método
+├─ Documentacion/  guía, instalación, medidas DAX, diccionario, esquema, diagrama del método y capturas del tablero
 └─ PlantillaBI/    fondos de las páginas del informe
 ```
 
@@ -191,7 +191,7 @@ Consulta 6 de `sql/consultas_propias.sql`, ejecutada el 24 oct 2026 sobre `obser
 |---|---|---|---|
 | Eventos | 10.514 | 10.514 | Sí |
 | Magnitud máxima | 7,7 | 7,7 | Sí |
-| Último evento UTC | 20 oct 2026 16:38 | por verificar en Power BI | — |
+| Último evento UTC | 20 oct 2026 16:38 | 20 oct 2026 16:38 | Sí |
 | Eventos Colombia | 36 | 36 | Sí |
 | % Colombia | 0,34 % | 0,34 % | Sí |
 | Magnitud máx. Colombia | 4,8 | 4,8 | Sí |
@@ -199,7 +199,7 @@ Consulta 6 de `sql/consultas_propias.sql`, ejecutada el 24 oct 2026 sobre `obser
 | Ids duplicados | 0 | 0 | Sí |
 | Sin magnitud / sin profundidad | 0 / 0 | 0 / 0 | Sí |
 | Magnitud / profundidad negativa | 479 / 219 | 479 / 219 | Sí |
-| Última carga ok UTC | 20 oct 2026 16:43 | por verificar en Power BI | — |
+| Última carga ok UTC | 20 oct 2026 16:43 | 20 oct 2026 16:43 | Sí |
 
 Estado de cargas: 2 ok, 2 con datos nuevos, 0 fallidas.
 
